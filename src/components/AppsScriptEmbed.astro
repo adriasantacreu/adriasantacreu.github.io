@@ -1,0 +1,38 @@
+---
+// src/components/AppsScriptEmbed.astro
+interface Props {
+  url: string;
+  title?: string;
+  height?: string;
+}
+
+const { url, title = "Google Apps Script App", height = "600px" } = Astro.props;
+---
+
+<div class="apps-script-container">
+  <iframe
+    src={url}
+    title={title}
+    width="100%"
+    height={height}
+    frameborder="0"
+    scrolling="auto"
+  >
+  </iframe>
+</div>
+
+<style>
+  .apps-script-container {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px; /* Opcional: per fer-ho més bonic */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Opcional: ombra */
+    background: #fff;
+  }
+  
+  iframe {
+    display: block;
+    width: 100%;
+    border: none;
+  }
+</style>
