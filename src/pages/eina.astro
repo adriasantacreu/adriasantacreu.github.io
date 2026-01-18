@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AppsScriptEmbed from '../components/AppsScriptEmbed.astro';
+
+// Posa aquí la teva URL llarga de Google Apps Script
+const MI_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxTx1SKWKyRHNbI0HVTxui3TRV4qcJi6c9mnF59GFTWomBQlWCZWu7CFSNqOKrqBwYo3A/exec";
+---
+
+<Layout title="La meva Eina">
+  <main>
+    <h1>La meva aplicació Apps Script</h1>
+    <p>Aquesta eina s'executa directament des del núvol de Google:</p>
+
+    <AppsScriptEmbed 
+      url={MI_SCRIPT_URL} 
+      height="800px" 
+      title="Gestió de dades"
+    />
+
+  </main>
+</Layout>
