@@ -1,7 +1,8 @@
 ---
 /**
- * StarfieldBg.astro — fons d'estels subtil (dark mode only, totes les pàgines)
- * Tot via JS: evita el tree-shaking d'Astro en styles globals condicionals.
+ * StarfieldBg.astro — fons d'estels en dark mode
+ * Lògica 100% JS: sense CSS dinàmic, sense class toggles.
+ * Les estrelles s'afegeixen/eliminen del DOM segons html.dark.
  */
 
 function randomStars(n: number, opacity: number): string {
@@ -12,47 +13,55 @@ function randomStars(n: number, opacity: number): string {
   return s.join(",")
 }
 
-const small  = randomStars(350, 0.5)
-const medium = randomStars(100, 0.65)
-const large  = randomStars(35,  0.8)
+const small  = randomStars(700, 0.7)
+const medium = randomStars(200, 0.85)
+const large  = randomStars(50,  1.0)
 ---
 
 <script define:vars={{ small, medium, large }}>
-  function injectStarfield() {
-    // Elimina instàncies anteriors (navegació SPA)
-    ["sfbg-s","sfbg-m","sfbg-l","sfbg-style"].forEach(id => {
-      document.getElementById(id)?.remove()
-    })
+  const IDS = ["sfbg-s", "sfbg-m", "sfbg-l"]
 
-    const style = document.createElement("style")
-    style.id = "sfbg-style"
-    style.textContent = `
-      .sfbg {
-        display: none;
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-      }
-      html.dark .sfbg { display: block; }
-    `
-    document.head.appendChild(style)
+  function isDark() {
+    return document.documentElement.classList.contains("dark")
+  }
 
-    const base = "position:fixed;inset:0;pointer-events:none;z-index:0;width:1px;height:1px;"
-    const make = (id, shadow, extra) => {
+  function removeStars() {
+    IDS.forEach(id => document.getElementById(id)?.remove())
+  }
+
+  function addStars() {
+    removeStars()
+
+    const make = (id, shadow, size) => {
       const d = document.createElement("div")
       d.id = id
-      d.className = "sfbg"
       d.setAttribute("aria-hidden", "true")
-      d.setAttribute("style", base + "box-shadow:" + shadow + ";" + (extra||"") + ";opacity:0.4")
+      d.setAttribute("style",
+        `position:fixed;top:0;left:0;width:${size}px;height:${size}px;` +
+        `pointer-events:none;z-index:1;box-shadow:${shadow}`
+      )
       document.body.appendChild(d)
     }
 
-    make("sfbg-s", small, "")
-    make("sfbg-m", medium, "opacity:0.5")
-    make("sfbg-l", large, "width:2px;height:2px;border-radius:50%;opacity:0.6")
+    make("sfbg-s", small,  1)
+    make("sfbg-m", medium, 1)
+    make("sfbg-l", large,  2)
   }
 
-  injectStarfield()
-  document.addEventListener("astro:after-swap", injectStarfield)
+  function syncStars() {
+    if (isDark()) {
+      addStars()
+    } else {
+      removeStars()
+    }
+  }
+
+  // Reacciona al toggle dark/light sense recarregar pàgina
+  new MutationObserver(syncStars).observe(
+    document.documentElement,
+    { attributes: true, attributeFilter: ["class"] }
+  )
+
+  syncStars()
+  document.addEventListener("astro:after-swap", syncStars)
 </script>
