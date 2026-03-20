@@ -4,7 +4,8 @@ import BaseHead from "@components/BaseHead.astro"
 import Header from "@components/Header.astro"
 import Footer from "@components/Footer.astro"
 import Drawer from "@components/Drawer.astro"
-const { title, description } = Astro.props
+import StarfieldBg from "@components/StarfieldBg.astro"
+const { title, description, hideStarfield = false } = Astro.props
 import { SITE } from "@consts"
 ---
 
@@ -16,6 +17,7 @@ import { SITE } from "@consts"
   <body>
     <Header />
     <Drawer />
+    {!hideStarfield && <StarfieldBg />}
     <main>
       <slot />
     </main>

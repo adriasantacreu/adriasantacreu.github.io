@@ -1,0 +1,65 @@
+---
+/**
+ * StarfieldBg.astro
+ * Fons d'estels subtil per a totes les pàgines (dark mode only).
+ * Generat al build time: sense JS en runtime, sense impacte de rendiment.
+ * Complement discret del hero animat de la pàgina principal.
+ */
+
+function randomStars(n: number, size: number, opacity: number): string {
+  const shadows: string[] = []
+  for (let i = 0; i < n; i++) {
+    const x = Math.floor(Math.random() * 2560)
+    const y = Math.floor(Math.random() * 2560)
+    shadows.push(`${x}px ${y}px rgba(255,255,255,${opacity})`)
+  }
+  return shadows.join(", ")
+}
+
+// Tres capes: estels petits (1px), mitjans (1.5px, menys), grans (2px, pocs)
+const starsSmall  = randomStars(350, 1,   0.55)
+const starsMedium = randomStars(120, 1.5, 0.70)
+const starsLarge  = randomStars(40,  2,   0.85)
+---
+
+<div id="sfbg-small"  aria-hidden="true"></div>
+<div id="sfbg-medium" aria-hidden="true"></div>
+<div id="sfbg-large"  aria-hidden="true"></div>
+
+<style define:vars={{ starsSmall, starsMedium, starsLarge }}>
+  #sfbg-small,
+  #sfbg-medium,
+  #sfbg-large {
+    display: none;
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Només en dark mode */
+  :global(.dark) #sfbg-small {
+    display: block;
+    width: 1px;
+    height: 1px;
+    box-shadow: var(--starsSmall);
+    opacity: 0.35;
+  }
+
+  :global(.dark) #sfbg-medium {
+    display: block;
+    width: 1px;
+    height: 1px;
+    box-shadow: var(--starsMedium);
+    opacity: 0.45;
+  }
+
+  :global(.dark) #sfbg-large {
+    display: block;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    box-shadow: var(--starsLarge);
+    opacity: 0.55;
+  }
+</style>
