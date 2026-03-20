@@ -3,10 +3,9 @@
  * StarfieldBg.astro
  * Fons d'estels subtil per a totes les pàgines (dark mode only).
  * Generat al build time: sense JS en runtime, sense impacte de rendiment.
- * Complement discret del hero animat de la pàgina principal.
  */
 
-function randomStars(n: number, size: number, opacity: number): string {
+function randomStars(n: number, opacity: number): string {
   const shadows: string[] = []
   for (let i = 0; i < n; i++) {
     const x = Math.floor(Math.random() * 2560)
@@ -16,17 +15,16 @@ function randomStars(n: number, size: number, opacity: number): string {
   return shadows.join(", ")
 }
 
-// Tres capes: estels petits (1px), mitjans (1.5px, menys), grans (2px, pocs)
-const starsSmall  = randomStars(350, 1,   0.55)
-const starsMedium = randomStars(120, 1.5, 0.70)
-const starsLarge  = randomStars(40,  2,   0.85)
+const starsSmall  = randomStars(350, 0.55)
+const starsMedium = randomStars(120, 0.70)
+const starsLarge  = randomStars(40,  0.85)
 ---
 
 <div id="sfbg-small"  aria-hidden="true"></div>
 <div id="sfbg-medium" aria-hidden="true"></div>
 <div id="sfbg-large"  aria-hidden="true"></div>
 
-<style define:vars={{ starsSmall, starsMedium, starsLarge }}>
+<style is:global>
   #sfbg-small,
   #sfbg-medium,
   #sfbg-large {
@@ -37,29 +35,38 @@ const starsLarge  = randomStars(40,  2,   0.85)
     z-index: 0;
   }
 
-  /* Només en dark mode */
-  :global(.dark) #sfbg-small {
+  html.dark #sfbg-small {
     display: block;
     width: 1px;
     height: 1px;
-    box-shadow: var(--starsSmall);
-    opacity: 0.35;
+    opacity: 0.4;
   }
 
-  :global(.dark) #sfbg-medium {
+  html.dark #sfbg-medium {
     display: block;
     width: 1px;
     height: 1px;
-    box-shadow: var(--starsMedium);
-    opacity: 0.45;
+    opacity: 0.5;
   }
 
-  :global(.dark) #sfbg-large {
+  html.dark #sfbg-large {
     display: block;
     width: 2px;
     height: 2px;
     border-radius: 50%;
-    box-shadow: var(--starsLarge);
-    opacity: 0.55;
+    opacity: 0.6;
   }
 </style>
+
+<script define:vars={{ starsSmall, starsMedium, starsLarge }}>
+  function applyStars() {
+    const small  = document.getElementById("sfbg-small")
+    const medium = document.getElementById("sfbg-medium")
+    const large  = document.getElementById("sfbg-large")
+    if (small)  small.style.boxShadow  = starsSmall
+    if (medium) medium.style.boxShadow = starsMedium
+    if (large)  large.style.boxShadow  = starsLarge
+  }
+  applyStars()
+  document.addEventListener("astro:after-swap", applyStars)
+</script>
