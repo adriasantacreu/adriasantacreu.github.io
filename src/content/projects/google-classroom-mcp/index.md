@@ -22,6 +22,33 @@ Gestionar Google Classroom des de la interfície web és lent i repetitiu: crear
 
 He desenvolupat un servidor **MCP (Model Context Protocol)** en **Node.js/TypeScript** que exposa les APIs de Google Classroom com a eines natives per a models de llenguatge com Claude. El servidor implementa el protocol MCP de forma completa, permetent que l'IA pugui interactuar amb Classroom de la mateixa manera que un humà ho faria des del navegador.
 
+```
+┌─────────────────────────────────────────────────────┐
+│                    USUARI (Docent)                   │
+│  "Publica l'examen de demà a 1r de Batxillerat"     │
+└───────────────────────┬─────────────────────────────┘
+                        │ llenguatge natural
+                        ▼
+┌─────────────────────────────────────────────────────┐
+│                   CLAUDE (LLM)                       │
+│  Interpreta la instrucció i tria les eines MCP      │
+└───────────────────────┬─────────────────────────────┘
+                        │ crida a eines MCP
+                        ▼
+┌─────────────────────────────────────────────────────┐
+│             GOOGLE CLASSROOM MCP SERVER              │
+│  classroom_list_courses → troba el curs             │
+│  classroom_create_assignment → crea la tasca        │
+│  classroom_upload_to_classroom → adjunta el PDF     │
+└───────────────────────┬─────────────────────────────┘
+                        │ Google Classroom API
+                        ▼
+┌─────────────────────────────────────────────────────┐
+│               GOOGLE CLASSROOM                       │
+│  ✓ Tasca publicada amb PDF adjunt                   │
+└─────────────────────────────────────────────────────┘
+```
+
 ### ✨ 43 Eines Implementades
 
 El servidor cobreix la totalitat de les operacions de Classroom:
@@ -35,14 +62,29 @@ El servidor cobreix la totalitat de les operacions de Classroom:
 * **Anuncis**: publicar i gestionar comunicats al curs.
 * **Tutors**: convidar i gestionar tutors legals dels alumnes.
 
-### 🤖 Integració amb Assistent Personal
+### 🤖 Exemple real d'ús
 
-Aquest MCP és la peça central d'un assistent personal docent construït al voltant de Claude Code. Combinat amb un servidor **Google Workspace MCP** (Gmail, Drive, Sheets, Docs, Calendar), permet automatitzar fluxos de treball complets com:
+Una sola instrucció en català pot desencadenar múltiples crides a l'API:
 
-1. Consultar l'estat dels lliuraments d'un curs
-2. Generar un examen en LaTeX
-3. Publicar-lo a Classroom com a tasca
-4. Enviar el PDF per correu als alumnes o als tutors
+```
+👤 "Quants alumnes han entregat l'examen de 4t Social?"
+
+🤖 classroom_list_courses()          → troba "4 MAT SOCIAL 25/26"
+   classroom_list_assignments()      → troba l'examen
+   classroom_list_submissions()      → consulta els lliuraments
+
+✅ "Han entregat 14 de 22 alumnes (63%). Els 8 que falten són: ..."
+```
+
+### 🔗 Integració amb Assistent Personal
+
+Aquest MCP és la peça central d'un assistent personal docent construït al voltant de Claude Code. Combinat amb un servidor **Google Workspace MCP** (Gmail, Drive, Sheets, Docs, Calendar), permet automatitzar fluxos de treball complets:
+
+```
+Instrucció  →  Classroom MCP  →  Genera examen LaTeX
+                                       ↓
+            ←  Gmail MCP      ←  Publica a Classroom
+```
 
 ### 🚀 Impacte
 
