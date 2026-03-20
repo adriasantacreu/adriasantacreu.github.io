@@ -1,72 +1,58 @@
 ---
 /**
- * StarfieldBg.astro
- * Fons d'estels subtil per a totes les pàgines (dark mode only).
- * Generat al build time: sense JS en runtime, sense impacte de rendiment.
+ * StarfieldBg.astro — fons d'estels subtil (dark mode only, totes les pàgines)
+ * Tot via JS: evita el tree-shaking d'Astro en styles globals condicionals.
  */
 
 function randomStars(n: number, opacity: number): string {
-  const shadows: string[] = []
+  const s: string[] = []
   for (let i = 0; i < n; i++) {
-    const x = Math.floor(Math.random() * 2560)
-    const y = Math.floor(Math.random() * 2560)
-    shadows.push(`${x}px ${y}px rgba(255,255,255,${opacity})`)
+    s.push(`${Math.floor(Math.random()*2560)}px ${Math.floor(Math.random()*2560)}px rgba(255,255,255,${opacity})`)
   }
-  return shadows.join(", ")
+  return s.join(",")
 }
 
-const starsSmall  = randomStars(350, 0.55)
-const starsMedium = randomStars(120, 0.70)
-const starsLarge  = randomStars(40,  0.85)
+const small  = randomStars(350, 0.5)
+const medium = randomStars(100, 0.65)
+const large  = randomStars(35,  0.8)
 ---
 
-<div id="sfbg-small"  aria-hidden="true"></div>
-<div id="sfbg-medium" aria-hidden="true"></div>
-<div id="sfbg-large"  aria-hidden="true"></div>
+<script define:vars={{ small, medium, large }}>
+  function injectStarfield() {
+    // Elimina instàncies anteriors (navegació SPA)
+    ["sfbg-s","sfbg-m","sfbg-l","sfbg-style"].forEach(id => {
+      document.getElementById(id)?.remove()
+    })
 
-<style is:global>
-  #sfbg-small,
-  #sfbg-medium,
-  #sfbg-large {
-    display: none;
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
+    const style = document.createElement("style")
+    style.id = "sfbg-style"
+    style.textContent = `
+      .sfbg {
+        display: none;
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+      html.dark .sfbg { display: block; }
+    `
+    document.head.appendChild(style)
+
+    const base = "position:fixed;inset:0;pointer-events:none;z-index:0;width:1px;height:1px;"
+    const make = (id, shadow, extra) => {
+      const d = document.createElement("div")
+      d.id = id
+      d.className = "sfbg"
+      d.setAttribute("aria-hidden", "true")
+      d.setAttribute("style", base + "box-shadow:" + shadow + ";" + (extra||"") + ";opacity:0.4")
+      document.body.appendChild(d)
+    }
+
+    make("sfbg-s", small, "")
+    make("sfbg-m", medium, "opacity:0.5")
+    make("sfbg-l", large, "width:2px;height:2px;border-radius:50%;opacity:0.6")
   }
 
-  html.dark #sfbg-small {
-    display: block;
-    width: 1px;
-    height: 1px;
-    opacity: 0.4;
-  }
-
-  html.dark #sfbg-medium {
-    display: block;
-    width: 1px;
-    height: 1px;
-    opacity: 0.5;
-  }
-
-  html.dark #sfbg-large {
-    display: block;
-    width: 2px;
-    height: 2px;
-    border-radius: 50%;
-    opacity: 0.6;
-  }
-</style>
-
-<script define:vars={{ starsSmall, starsMedium, starsLarge }}>
-  function applyStars() {
-    const small  = document.getElementById("sfbg-small")
-    const medium = document.getElementById("sfbg-medium")
-    const large  = document.getElementById("sfbg-large")
-    if (small)  small.style.boxShadow  = starsSmall
-    if (medium) medium.style.boxShadow = starsMedium
-    if (large)  large.style.boxShadow  = starsLarge
-  }
-  applyStars()
-  document.addEventListener("astro:after-swap", applyStars)
+  injectStarfield()
+  document.addEventListener("astro:after-swap", injectStarfield)
 </script>
