@@ -12,6 +12,12 @@ const { title, summary, date } = data
 
 const demoUrl = collection === "projects" ? data.demoUrl : null
 const repoUrl = collection === "projects" ? data.repoUrl : null
+const logos  = collection === "projects" ? (data.logos ?? []) : []
+
+const logoMeta: Record<string, { src: string; invert?: boolean }> = {
+  mcp:                { src: "/logos/mcp.svg", invert: true },
+  "google-classroom": { src: "/logos/google-classroom.svg" },
+}
 ---
 
 <div>
@@ -41,6 +47,15 @@ const repoUrl = collection === "projects" ? data.repoUrl : null
   <h1 class="text-3xl font-semibold text-black dark:text-white mt-2">
     {title}
   </h1>
+  {logos.length > 0 &&
+    <div class="flex items-center gap-4 mt-3 mb-1">
+      {logos.map(key => {
+        const meta = logoMeta[key]
+        if (!meta) return null
+        return <img src={meta.src} alt={key} class:list={["h-9 w-auto", meta.invert && "dark:invert"]} />
+      })}
+    </div>
+  }
   <div class="mt-1">
     {summary}
   </div>
