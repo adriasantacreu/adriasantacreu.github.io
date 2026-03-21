@@ -4,7 +4,7 @@ import type { Site, Page, Links, Socials } from "@types"
 export const SITE: Site = {
   TITLE: "Adrià Santacreu",
   DESCRIPTION: "Graduat en Física (UB). Docent i Data Scientist. Especialista en automatització amb n8n, AppScript i IA aplicada a l'educació i la productivitat.",
-  AUTHOR: "Adrià Santacreu Giménez",
+  AUTHOR: "Adrià Santacreu",
 }
 
 // Work Page (Experiència)
