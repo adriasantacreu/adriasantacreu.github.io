@@ -1,15 +1,43 @@
 ---
-import { SITE, LINKS } from "@consts"
+import { SITE } from "@consts"
 import { cn } from "@lib/utils"
 const { pathname } = Astro.url
-const subpath = pathname.match(/[^/]+/g)
+
+let locale = "ca"
+let canonicalPath = pathname
+if (pathname === "/en" || pathname.startsWith("/en/")) {
+  locale = "en"; canonicalPath = pathname.slice(3) || "/"
+} else if (pathname === "/es" || pathname.startsWith("/es/")) {
+  locale = "es"; canonicalPath = pathname.slice(3) || "/"
+}
+const section = canonicalPath.split("/")[1] || ""
+
+const drawerLinksMap: Record<string, { TEXT: string; HREF: string; SECTION: string }[]> = {
+  ca: [
+    { TEXT: "Inici", HREF: "/", SECTION: "" },
+    { TEXT: "Experiència", HREF: "/work", SECTION: "work" },
+    { TEXT: "Projectes", HREF: "/projects", SECTION: "projects" },
+  ],
+  en: [
+    { TEXT: "Home", HREF: "/en", SECTION: "" },
+    { TEXT: "Experience", HREF: "/en/work", SECTION: "work" },
+    { TEXT: "Projects", HREF: "/en/projects", SECTION: "projects" },
+  ],
+  es: [
+    { TEXT: "Inicio", HREF: "/es", SECTION: "" },
+    { TEXT: "Experiencia", HREF: "/es/work", SECTION: "work" },
+    { TEXT: "Proyectos", HREF: "/es/projects", SECTION: "projects" },
+  ],
+}
+const drawerLinks = drawerLinksMap[locale] ?? drawerLinksMap["ca"]!
+const searchHref = locale === "ca" ? "/search" : `/${locale}/search`
 ---
 
 <div id="drawer" class="fixed inset-0 h-0 z-40 overflow-hidden flex flex-col items-center justify-center md:hidden bg-neutral-100 dark:bg-neutral-900 transition-[height] duration-300 ease-in-out">
   <nav class="flex flex-col items-center space-y-2">
     {
-      LINKS.map((LINK) => (
-        <a href={LINK.HREF} class={cn("flex items-center justify-center px-3 py-1 rounded-full", "text-current hover:text-black dark:hover:text-white", "hover:bg-black/5 dark:hover:bg-white/20", "transition-colors duration-300 ease-in-out", pathname === LINK.HREF || "/" + subpath?.[0] === LINK.HREF ? "pointer-events-none bg-black dark:bg-white text-white dark:text-black" : "")}>
+      drawerLinks.map((LINK) => (
+        <a href={LINK.HREF} class={cn("flex items-center justify-center px-3 py-1 rounded-full", "text-current hover:text-black dark:hover:text-white", "hover:bg-black/5 dark:hover:bg-white/20", "transition-colors duration-300 ease-in-out", section === LINK.SECTION ? "pointer-events-none bg-black dark:bg-white text-white dark:text-black" : "")}>
           {LINK.TEXT}
         </a>
       ))
@@ -17,7 +45,7 @@ const subpath = pathname.match(/[^/]+/g)
   </nav>
 
   <div class="flex gap-1 mt-5">
-    <a href="/search" aria-label={`Search blog posts and projects on ${SITE.TITLE}`} class={cn("size-9 rounded-full p-2 items-center justify-center bg-transparent hover:bg-black/5 dark:hover:bg-white/20 stroke-current hover:stroke-black hover:dark:stroke-white border border-black/10 dark:border-white/25 transition-colors duration-300 ease-in-out", pathname === "/search" || "/" + subpath?.[0] === "search" ? "pointer-events-none bg-black dark:bg-white text-white dark:text-black" : "")}>
+    <a href={searchHref} aria-label={`Search blog posts and projects on ${SITE.TITLE}`} class={cn("size-9 rounded-full p-2 items-center justify-center bg-transparent hover:bg-black/5 dark:hover:bg-white/20 stroke-current hover:stroke-black hover:dark:stroke-white border border-black/10 dark:border-white/25 transition-colors duration-300 ease-in-out", section === "search" ? "pointer-events-none bg-black dark:bg-white text-white dark:text-black" : "")}>
       <svg class="size-full">
         <use href="/ui.svg#search"></use>
       </svg>

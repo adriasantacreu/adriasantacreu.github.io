@@ -33,21 +33,17 @@ export const SEARCH: Page = {
 
 // Links (Navegació en Català)
 export const LINKS: Links = [
-  { 
-    TEXT: "Inici", 
-    HREF: "/", 
+  {
+    TEXT: "Inici",
+    HREF: "/",
   },
-  { 
-    TEXT: "Experiència", 
-    HREF: "/work", 
+  {
+    TEXT: "Experiència",
+    HREF: "/work",
   },
-  { 
-    TEXT: "Blog", 
-    HREF: "/blog", 
-  },
-  { 
-    TEXT: "Projectes", 
-    HREF: "/projects", 
+  {
+    TEXT: "Projectes",
+    HREF: "/projects",
   },
 ]
 
