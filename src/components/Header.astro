@@ -15,7 +15,7 @@ if (pathname === "/en" || pathname.startsWith("/en/")) {
 }
 const section = canonicalPath.split("/")[1] || ""
 
-const navLinks = {
+const navLinksMap: Record<string, { TEXT: string; HREF: string; SECTION: string }[]> = {
   ca: [
     { TEXT: "Inici", HREF: "/", SECTION: "" },
     { TEXT: "Experiència", HREF: "/work", SECTION: "work" },
@@ -34,7 +34,8 @@ const navLinks = {
     { TEXT: "Blog", HREF: "/es/blog", SECTION: "blog" },
     { TEXT: "Proyectos", HREF: "/es/projects", SECTION: "projects" },
   ],
-}[locale]
+}
+const navLinks = navLinksMap[locale] ?? navLinksMap["ca"]!
 
 const searchHref = locale === "ca" ? "/search" : `/${locale}/search`
 
