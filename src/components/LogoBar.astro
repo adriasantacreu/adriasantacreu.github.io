@@ -1,0 +1,25 @@
+---
+interface Props {
+  logos: string[]
+}
+const { logos } = Astro.props
+
+const logoMap: Record<string, { src: string; invert?: boolean }> = {
+  mcp:               { src: "/logos/mcp.svg", invert: true },
+  "google-classroom": { src: "/logos/google-classroom.svg" },
+}
+---
+
+<div class="not-prose flex items-center gap-4 mt-4 mb-8">
+  {logos.map(key => {
+    const logo = logoMap[key]
+    if (!logo) return null
+    return (
+      <img
+        src={logo.src}
+        alt={key}
+        class:list={["h-10 w-auto", logo.invert && "dark:invert"]}
+      />
+    )
+  })}
+</div>

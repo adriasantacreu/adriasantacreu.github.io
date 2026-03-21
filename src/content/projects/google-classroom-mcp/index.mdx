@@ -15,11 +15,9 @@ repoUrl: https://github.com/adriasantacreu/google-classroom-mcp
 ---
 
 import Mermaid from '@components/Mermaid.astro'
+import LogoBar from '@components/LogoBar.astro'
 
-<div class="not-prose flex items-center gap-4 mt-4 mb-8">
-  <img src="/logos/mcp.svg" alt="Model Context Protocol" class="h-10 w-auto dark:invert" title="Model Context Protocol" />
-  <img src="/logos/google-classroom.svg" alt="Google Classroom" class="h-10 w-auto" title="Google Classroom" />
-</div>
+<LogoBar logos={["mcp", "google-classroom"]} />
 
 ### 💡 Motivació
 
