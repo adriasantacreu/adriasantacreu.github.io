@@ -55,7 +55,7 @@ const logoMeta: Record<string, { src: string; invert?: boolean }> = {
         const meta = logoMeta[key]
         if (!meta) return null
         return <>
-          {i > 0 && <span class="text-4xl font-light opacity-40 select-none">×</span>}
+          {i > 0 && <span class="text-7xl font-thin opacity-50 select-none">×</span>}
           <img src={meta.src} alt={key} class:list={["h-36 w-auto", meta.invert && "dark:invert"]} />
         </>
       })}
