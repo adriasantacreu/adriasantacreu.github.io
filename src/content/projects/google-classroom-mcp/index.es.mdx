@@ -1,0 +1,74 @@
+---
+title: "Google Classroom MCP"
+summary: "Servidor MCP (Model Context Protocol) con 43 herramientas para integrar Google Classroom directamente en agentes de IA como Claude, eliminando la gestión manual de cursos, tareas y alumnos."
+date: "Mar 20 2026"
+draft: false
+lang: es
+tags:
+- MCP
+- Google Classroom
+- Node.js
+- IA
+- Automatización
+- Docencia
+demoUrl: https://github.com/adriasantacreu/google-classroom-mcp
+repoUrl: https://github.com/adriasantacreu/google-classroom-mcp
+logos:
+- mcp
+- google-classroom
+---
+
+import Mermaid from '@components/Mermaid.astro'
+
+### 💡 Motivación
+
+Gestionar Google Classroom desde la interfaz web es lento y repetitivo: crear tareas, moverlas a tópicos, publicar anuncios, revisar entregas... todas operaciones que consumen tiempo que podría dedicarse al alumnado. El objetivo era poder hacerlo todo con lenguaje natural, directamente desde un asistente de IA.
+
+### 🛠️ Cómo funciona
+
+<Mermaid chart={`
+flowchart TD
+    A[👤 Docente] -->|instrucción en español| B[🤖 Claude LLM]
+    B -->|elige las herramientas adecuadas| C[Google Classroom MCP Server]
+    C -->|classroom_list_courses| D[(Google Classroom API)]
+    C -->|classroom_create_assignment| D
+    C -->|classroom_upload_to_classroom| D
+    D -->|✅ publicado| E[📚 Curso actualizado]
+`} />
+
+### ✨ 43 Herramientas Implementadas
+
+El servidor cubre la totalidad de las operaciones de Classroom:
+
+* **Cursos**: crear, actualizar, eliminar, listar y buscar cursos.
+* **Alumnos y profesores**: añadir, eliminar y listar miembros.
+* **Tareas y materiales**: crear, editar, publicar y eliminar.
+* **Tópicos**: organizar el contenido del curso por temas.
+* **Entregas**: consultar, calificar y devolver tareas.
+* **Rúbricas**: crear y gestionar criterios de evaluación.
+* **Anuncios**: publicar y gestionar comunicados en el curso.
+* **Tutores**: invitar y gestionar tutores legales del alumnado.
+
+### 🤖 Integración con Asistente Personal
+
+Este MCP es la pieza central de un asistente personal docente construido alrededor de Claude Code. Combinado con **Google Workspace MCP** (Gmail, Drive, Sheets, Docs, Calendar), permite automatizar flujos de trabajo completos:
+
+<Mermaid chart={`
+flowchart LR
+    A[👤 Docente] --> B[🤖 Asistente IA]
+    B --> C[Classroom MCP]
+    B --> D[Workspace MCP]
+    C --> E[📚 Publica tarea]
+    C --> F[👥 Gestiona alumnos]
+    D --> G[📧 Envía por Gmail]
+    D --> H[📄 Genera en Drive]
+    D --> I[📊 Actualiza Sheets]
+`} />
+
+### 🚀 Impacto
+
+* **76 alumnos** gestionados en 4 cursos desde una sola interfaz conversacional.
+* Operaciones que requerían 10–15 clics se hacen con una sola instrucción en español.
+* Base para un ecosistema de automatización docente en constante crecimiento.
+
+> "Poder decir 'publica el examen de mañana en 1r de Bachillerato' y que ocurra solo es exactamente lo que buscaba."

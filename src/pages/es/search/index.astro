@@ -4,21 +4,23 @@ import PageLayout from "@layouts/PageLayout.astro";
 import TopLayout from "@layouts/TopLayout.astro";
 import BottomLayout from "@layouts/BottomLayout.astro";
 import Search from "@components/Search";
-import { SEARCH } from "@consts";
+
+const title = "Buscar"
+const description = "Busca entre todos mis artículos y proyectos."
 
 const posts = (await getCollection("blog")).filter((post) => !post.data.draft);
 
 const projects = (await getCollection("projects")).filter(
-  (post) => !post.data.draft && (!post.data.lang || post.data.lang === "ca"),
+  (post) => !post.data.draft && post.data.lang === "es",
 );
 
 const data = [...posts, ...projects] as CollectionEntry<"blog">[];
 ---
 
-<PageLayout title={SEARCH.TITLE} description={SEARCH.DESCRIPTION}>
+<PageLayout title={title} description={description}>
   <TopLayout>
     <div class="animate page-heading">
-      {SEARCH.TITLE}
+      {title}
     </div>
   </TopLayout>
   <BottomLayout>

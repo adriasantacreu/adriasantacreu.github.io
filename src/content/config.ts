@@ -32,6 +32,7 @@ const projects = defineCollection({
     demoUrl: z.string().optional(),
     repoUrl: z.string().optional(),
     logos: z.array(z.string()).optional(),
+    lang: z.string().optional(),
   }),
 })
 
