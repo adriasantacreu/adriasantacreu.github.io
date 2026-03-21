@@ -155,7 +155,7 @@ const stack = [
           {
             projects.map((project) => (
               <li>
-                <ArrowCard entry={project} />
+                <ArrowCard entry={project} href={`/en/projects/${project.slug.replace(/\/index\.[a-z.]+$/, '')}`} />
               </li>
             ))
           }

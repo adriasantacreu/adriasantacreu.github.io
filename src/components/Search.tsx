@@ -6,9 +6,16 @@ import SearchBar from "@components/SearchBar"
 
 type Props = {
   data: CollectionEntry<"blog">[]
+  locale?: string
 }
 
-export default function Search({ data }: Props) {
+function entryHref(entry: CollectionEntry<"blog">, locale: string) {
+  const cleanSlug = entry.slug.replace(/\/index\.[a-z.]+$/, "")
+  const prefix = locale === "ca" ? "" : `/${locale}`
+  return `${prefix}/${entry.collection}/${cleanSlug}`
+}
+
+export default function Search({ data, locale = "ca" }: Props) {
   const [query, setQuery] = createSignal("")
   const [results, setResults] = createSignal<CollectionEntry<"blog">[]>([])
 
@@ -44,7 +51,7 @@ export default function Search({ data }: Props) {
           <ul class="flex flex-col gap-3">
             {results().map(result => (
               <li>
-                <ArrowCard entry={result} pill={true} />
+                <ArrowCard entry={result} pill={true} href={entryHref(result, locale)} />
               </li>
             ))}
           </ul>
