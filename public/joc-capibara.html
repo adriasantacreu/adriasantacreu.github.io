@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capybara Worlds 🎀✨</title>
+    <style>
+        :root {
+            --bg-window: #FFF0F5; 
+            --pink-accent: #FFB6C1;
+            --pink-dark: #D14D72;
+            
+            /* Colors base capibara */
+            --capy-body: #8B5A2B;
+            --capy-light: #A06D3B;
+            --capy-legs: #6E4722;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #FFF0F5;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            color: var(--pink-dark);
+            text-shadow: 2px 2px 0px #FFF;
+        }
+
+        /* --- CONTENIDOR PRINCIPAL --- */
+        #game-window {
+            position: relative;
+            width: 800px;
+            height: 380px;
+            background: #FFE4E1;
+            border: 4px solid var(--pink-accent);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.6);
+            transition: background 0.5s ease;
+        }
+
+        /* --- LAYOUT MULTIJUGADOR (SPLIT SCREEN) --- */
+        #mp-container {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+
+        .player-screen {
+            position: relative;
+            width: 100%;
+            height: 50%;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        #p1-screen { border-bottom: 3px solid #333; }
+
+        /* --- PANTALLES DE DERROTA LOCALITZADES (MINI-SCREENS) --- */
+        .local-gameover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(240, 128, 128, 0.92);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 35;
+            color: white;
+            text-shadow: 1px 1px 2px black;
+        }
+        .local-gameover h2 { margin: 0 0 5px 0; font-size: 20px; }
+        .local-gameover p { margin: 0 0 10px 0; font-size: 13px; }
+        .local-gameover .mini-btn-group { display: flex; gap: 10px; }
+        .local-gameover .btn-mini {
+            background: #FFF;
+            color: var(--pink-dark);
+            border: 2px solid var(--pink-accent);
+            padding: 4px 15px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .local-gameover .btn-mini:hover { background: #FFE4E1; }
+
+        /* --- FONS DINÀMICS PER CADA MÓN --- */
+        .bg-world-default { background: linear-gradient(to bottom, #FFF0F5, #FFE4E1) !important; }
+        .bg-world-police { 
+            background: #D2D7DF !important; 
+            background-image: linear-gradient(90deg, transparent 95%, #A0A5AD 95%), linear-gradient(#B8BDC5 2px, transparent 2px) !important;
+            background-size: 80px 100%, 100% 40px !important;
+        }
+        .bg-world-thief { 
+            background: #CD853F !important;
+            background-image: linear-gradient(30deg, #B26628 25%, transparent 25%), linear-gradient(150deg, #B26628 25%, transparent 25%) !important;
+            background-size: 30px 30px !important;
+        }
+        .bg-world-hero { background: linear-gradient(to bottom, #87CEEB, #E0F6FF) !important; }
+        .bg-world-spidey { 
+            background: #4A4E69 !important; 
+            background-image: radial-gradient(circle at 50% 50%, transparent 60%, rgba(255,255,255,0.05) 60%), repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px) !important;
+        }
+        .bg-world-zoro {
+            background: #3B5E66 !important;
+            background-image: radial-gradient(circle at 70% 30%, #2A444A 40px, transparent 41px), radial-gradient(ellipse at 20% 40%, #1A2E33 80px, transparent 82px) !important;
+        }
+        .bg-world-ironman { background: linear-gradient(to bottom, #1E3A8A, #3B82F6) !important; background-size: 100% 100%, 40px 40px !important; }
+        .bg-world-hulk { background: #555555 !important; background-image: linear-gradient(90deg, #333 10px, transparent 10px) !important; background-size: 60px 100% !important; }
+        .bg-world-goku { background: linear-gradient(to bottom, #00BFFF, #87CEFA) !important; background-image: radial-gradient(ellipse at 30% 70%, #8B7355 90px, transparent 95px) !important; }
+
+        /* --- MENÚS DEL JOC --- */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 25px;
+            box-sizing: border-box;
+            background: rgba(255, 240, 245, 0.96);
+            z-index: 40;
+        }
+
+        #menu-main, #menu-main-mp, #menu-gameover { justify-content: center; padding-top: 0; }
+        .menu-title { font-size: 26px; color: var(--pink-dark); margin-bottom: 15px; font-weight: bold; }
+
+        .btn {
+            background-color: #FFB6C1;
+            color: white;
+            border: 2px solid #FF9AA2;
+            padding: 10px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 6px;
+            width: 220px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        .btn:hover { background-color: #FF9AA2; transform: scale(1.05); }
+        
+        .btn-back-fixed { position: absolute; bottom: 15px; right: 20px; background-color: #A37081; border-color: #8F5B66; width: 140px; padding: 8px 15px; font-size: 14px; margin: 0; z-index: 45; }
+        .btn-credits-fixed { position: absolute; bottom: 15px; left: 20px; background-color: #E8CCD7; border: 2px solid var(--pink-accent); color: var(--pink-dark); width: 110px; padding: 6px 10px; font-size: 12px; margin: 0; border-radius: 15px; cursor: pointer; font-family: inherit; font-weight: bold; z-index: 45; }
+
+        #secret-cheat-btn { position: absolute; bottom: 0; right: 0; width: 40px; height: 40px; background: transparent; border: none; outline: none; z-index: 100; }
+        .credits-content { text-align: center; background: white; padding: 25px; border-radius: 15px; border: 3px dashed var(--pink-accent); max-width: 80%; }
+
+        /* --- INTERFICIE IN-GAME --- */
+        .game-floor { position: absolute; bottom: 0; left: 0; width: 100%; height: 30px; background-color: #E8CCD7; border-top: 2px dashed var(--pink-accent); }
+        #floor { height: 40px; }
+
+        #hud { position: absolute; top: 15px; right: 20px; display: flex; gap: 10px; font-size: 14px; font-weight: bold; color: var(--pink-dark); z-index: 10; }
+        .hud-box { background: rgba(255, 255, 255, 0.85); padding: 5px 12px; border-radius: 20px; border: 2px solid var(--pink-accent); }
+        .mp-indicator { position: absolute; top: 10px; left: 15px; background: rgba(0,0,0,0.6); color: white; padding: 3px 10px; font-size: 11px; border-radius: 5px; font-weight: bold; z-index: 10; }
+
+        /* --- GRAELLA AMB SCROLL --- */
+        .items-grid { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 90%; max-height: 230px; overflow-y: scroll; padding: 10px 15px 30px 15px; box-sizing: border-box; }
+        .items-grid::-webkit-scrollbar { width: 8px; }
+        .items-grid::-webkit-scrollbar-track { background: rgba(255, 182, 193, 0.2); }
+        .items-grid::-webkit-scrollbar-thumb { background: var(--pink-accent); border-radius: 10px; }
+
+        .skin-card { background: rgba(255, 255, 255, 0.9); border: 2px solid var(--pink-accent); border-radius: 15px; padding: 12px 10px; width: 135px; height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box; }
+        .card-preview-box { position: relative; width: 100%; height: 50px; }
+        .skin-name { font-size: 12px; font-weight: bold; color: #333; text-align: center; }
+
+        /* --- ENGINE GRÀFIC DE LA CAPIBARA --- */
+        .capybara-engine { position: absolute; width: 65px; height: 45px; z-index: 20; }
+        #capybara { bottom: 40px; left: 80px; }
+        .capy-p1 { bottom: 30px; left: 80px; }
+        .capy-p2 { bottom: 30px; left: 80px; }
+
+        .card-preview-box .capybara-engine { bottom: 3px; left: 32px; transform: scale(0.85); }
+
+        .c-body { position: absolute; width: 50px; height: 38px; background-color: var(--capy-body); border-radius: 15px 15px 10px 10px; bottom: 0; left: 0; }
+        .c-head { position: absolute; width: 28px; height: 25px; background-color: var(--capy-body); border-radius: 8px 12px 5px 5px; top: -12px; right: -10px; }
+        .c-eye { position: absolute; width: 4px; height: 4px; background-color: #000; border-radius: 50%; top: 5px; right: 12px; }
+        .c-accessory { position: absolute; top: -24px; right: 2px; font-size: 18px; z-index: 25; }
+        .c-leg { position: absolute; width: 6px; height: 10px; background-color: var(--capy-legs); bottom: -8px; border-radius: 0 0 3px 3px; }
+        .l-1 { left: 8px; } .l-2 { left: 20px; } .l-3 { left: 32px; } .l-4 { left: 42px; }
+
+        /* --- STYLES DE DISFRESSES --- */
+        .s-police .c-body { background-color: #1A365D; border-top: 4px solid #F6E05E; } .s-police .c-head { background-color: #1A365D; }
+        .s-thief .c-body { background-color: #E65C00; background-image: linear-gradient(90deg, #111 50%, transparent 50%); background-size: 14px 100%; } .s-thief .c-head { background-color: #E65C00; }
+        .s-hero .c-body { background-color: #0055A5; } .s-hero .c-body::before { content: ''; position: absolute; width: 20px; height: 30px; background: #E50000; left: -15px; top: -2px; border-radius: 5px 0 0 10px; transform: rotate(10deg); }
+        .s-spidey .c-body { background-color: #002F6C; border-top: 12px solid #CC0000; border-left: 10px solid #CC0000;} .s-spidey .c-head { background-color: #CC0000; background-image: radial-gradient(#111 1px, transparent 1px); background-size: 5px 5px;} .s-spidey .c-eye { background-color: #FFF; width: 6px; height: 4px; border: 1px solid #000; }
+        .s-zoro .c-body { background-color: #1A3A2A; border-top: 4px solid #8B2500; } .s-zoro .c-head { background-color: #2E8B57; } 
+        .s-ironman .c-body { background-color: #8B0000; border-top: 4px solid #FFD700; } .s-ironman .c-head { background-color: #8B0000; } .s-ironman .c-eye { background-color: #00FFFF; } 
+        .s-hulk .c-body { background-color: #00A86B; border-bottom: 8px solid #4B0082; } .s-hulk .c-head { background-color: #00A86B; }
+        .s-goku .c-body { background-color: #FF4500; border-top: 6px solid #000080; } .s-goku .c-head { background-color: #00BFFF; } 
+
+        /* --- OBSTACLES --- */
+        .game-obstacle { position: absolute; bottom: 40px; width: 35px; height: 45px; font-size: 32px; line-height: 45px; text-align: center; z-index: 15; }
+        .mp-obstacle { bottom: 30px; }
+
+        /* --- ANIMACIONS --- */
+        .trail-particle { position: absolute; font-size: 16px; z-index: 5; pointer-events: none; animation: moveParticle 0.5s linear forwards; }
+        .rainbow-brick { position: absolute; width: 14px; height: 5px; opacity: 0.9; z-index: 5; pointer-events: none; animation: moveParticle 0.4s linear forwards; }
+        .pop-jump-effect { position: absolute; font-size: 20px; z-index: 30; pointer-events: none; animation: floatUpAndAway 0.7s ease-out forwards; }
+        .coin-alert { position: absolute; color: #F4D03F; font-weight: bold; font-size: 18px; z-index: 35; animation: coinFloat 0.6s ease-out forwards; }
+
+        @keyframes moveParticle {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(-55px, var(--random-y, -10px)) scale(0.4) rotate(120deg); opacity: 0; }
+        }
+        @keyframes floatUpAndAway { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(-40px, -70px) scale(1.4); } }
+        @keyframes coinFloat { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-40px); } }
+    </style>
+</head>
+<body>
+
+    <h1>Capybara Worlds 🎀✨</h1>
+
+    <div id="game-window" class="bg-world-default">
+
+        <button id="secret-cheat-btn" onclick="addSecretCoins(event)"></button>
+
+        <div id="hud">
+            <div class="hud-box">⭐ Rècord: <span id="highscore">0</span></div>
+            <div class="hud-box">🏆 Score: <span id="score">0</span></div>
+            <div class="hud-box">🪙 Monedes: <span id="coins-hud">0</span></div>
+        </div>
+
+        <div id="floor" class="game-floor"></div>
+        <div id="capybara" class="capybara-engine">
+            <div class="c-accessory" id="capy-hat">🎀</div>
+            <div class="c-body">
+                <div class="c-head"><div class="c-eye"></div></div>
+                <div class="c-leg l-1"></div><div class="c-leg l-2"></div>
+                <div class="c-leg l-3"></div><div class="c-leg l-4"></div>
+            </div>
+        </div>
+
+        <div id="mp-container">
+            <div id="p1-screen" class="player-screen bg-world-default" onmousedown="triggerJumpMP(1, event)">
+                <div class="mp-indicator">JUGADOR 1 (Tecla W)</div>
+                <div id="capybara-p1" class="capybara-engine capy-p1">
+                    <div class="c-accessory" id="capy-hat-p1">🎀</div>
+                    <div class="c-body">
+                        <div class="c-head"><div class="c-eye"></div></div>
+                        <div class="c-leg l-1"></div><div class="c-leg l-2"></div>
+                        <div class="c-leg l-3"></div><div class="c-leg l-4"></div>
+                    </div>
+                </div>
+                <div id="floor-p1" class="game-floor"></div>
+                
+                <div id="p1-local-gameover" class="local-gameover">
+                    <h2>Has perdut! 😢</h2>
+                    <p>Espera que el Jugador 2 acabi o reinicia.</p>
+                    <div class="mini-btn-group">
+                        <button class="btn-mini" onclick="startGame()">Reiniciar 🔄</button>
+                        <button class="btn-mini" onclick="goToActiveMainMenu()">Menú 🏠</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="p2-screen" class="player-screen bg-world-default" onmousedown="triggerJumpMP(2, event)">
+                <div class="mp-indicator">JUGADOR 2 (Fletxa Amunt)</div>
+                <div id="capybara-p2" class="capybara-engine capy-p2">
+                    <div class="c-accessory" id="capy-hat-p2">🎀</div>
+                    <div class="c-body">
+                        <div class="c-head"><div class="c-eye"></div></div>
+                        <div class="c-leg l-1"></div><div class="c-leg l-2"></div>
+                        <div class="c-leg l-3"></div><div class="c-leg l-4"></div>
+                    </div>
+                </div>
+                <div id="floor-p2" class="game-floor"></div>
+                
+                <div id="p2-local-gameover" class="local-gameover">
+                    <h2>Has perdut! 😢</h2>
+                    <p>Espera que el Jugador 1 acabi o reinicia.</p>
+                    <div class="mini-btn-group">
+                        <button class="btn-mini" onclick="startGame()">Reiniciar 🔄</button>
+                        <button class="btn-mini" onclick="goToActiveMainMenu()">Menú 🏠</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="menu-main" class="screen">
+            <div class="menu-title">Menú Principal 🎀</div>
+            <button class="btn" onclick="selectMainMenuMode(1)">1 Jugador</button>
+            <button class="btn" style="background-color: #B5EAD7; border-color: #A2E1C9;" onclick="selectMainMenuMode(2)">2 Jugadors 👥</button>
+            <button class="btn" onclick="openScreen('menu-shop')">Tenda 🪙</button>
+            <button class="btn" onclick="openScreen('menu-wardrobe')">Vestuari 👗</button>
+            <button class="btn-credits-fixed" onclick="openScreen('menu-credits')">Crèdits 📑</button>
+        </div>
+
+        <div id="menu-main-mp" class="screen" style="display:none;">
+            <div class="menu-title">Mode 2 Jugadors 👥</div>
+            <button class="btn" onclick="startGame()">Jugar Partida</button>
+            <button class="btn" onclick="openWardrobeMP(1)">Vestuari P1 👗</button>
+            <button class="btn" onclick="openWardrobeMP(2)">Vestuari P2 👔</button>
+            <button class="btn" onclick="openScreen('menu-shop')">Tenda 🪙</button>
+            <button class="btn btn-back-fixed" onclick="openScreen('menu-main')">Enrere</button>
+        </div>
+
+        <div id="menu-credits" class="screen" style="display:none; justify-content: center;">
+            <div class="menu-title">Crèdits del Joc</div>
+            <div class="credits-content">
+                <p style="font-size: 18px; font-weight: bold; color: var(--pink-dark); margin: 5px 0;">Creador oficial:</p>
+                <p style="font-size: 20px; font-weight: bold; color: #333; margin: 5px 0 20px 0;">Arnau Asenjo Navarro</p>
+                <p style="font-size: 16px; font-style: italic; color: #666;">Institut Escola Sant Pol de Mar</p>
+            </div>
+            <button class="btn btn-back-fixed" onclick="goBackFromSubmenus()">Tornar</button>
+        </div>
+
+        <div id="menu-shop" class="screen" style="display:none;">
+            <div class="menu-title">Tenda (Cost: 150 🪙)</div>
+            <div style="margin-bottom: 10px; font-weight: bold; color: #B5838D;">Monedes disponibles: <span id="shop-coins">0</span></div>
+            <div class="items-grid" id="shop-grid"></div>
+            <button class="btn btn-back-fixed" onclick="goBackFromSubmenus()">Tornar</button>
+        </div>
+
+        <div id="menu-wardrobe" class="screen" style="display:none;">
+            <div class="menu-title" id="wardrobe-title">El Teu Vestuari</div>
+            <div class="items-grid" id="wardrobe-grid"></div>
+            <button class="btn btn-back-fixed" onclick="goBackFromWardrobe()">Tornar</button>
+        </div>
+
+        <div id="menu-gameover" class="screen" style="display:none;">
+            <div class="menu-title" id="gameover-title">Game Over 🎀😢</div>
+            <div id="gameover-sub" style="font-size: 18px; margin-bottom: 15px; color: #555;">Partida acabada!</div>
+            <button class="btn" onclick="startGame()">Tornar a jugar</button>
+            <button class="btn" onclick="goToActiveMainMenu()">Menú Principal</button>
+        </div>
+
+    </div>
+
+    <script>
+        const gameWindow = document.getElementById('game-window');
+        const capybara = document.getElementById('capybara');
+        const capyHat = document.getElementById('capy-hat');
+        const scoreDisplay = document.getElementById('score');
+        const highscoreDisplay = document.getElementById('highscore');
+        const coinsHud = document.getElementById('coins-hud');
+        const floor = document.getElementById('floor');
+        const mpContainer = document.getElementById('mp-container');
+
+        // MULTIPLAYER ELEMENTS
+        const capyP1 = document.getElementById('capybara-p1');
+        const capyP2 = document.getElementById('capybara-p2');
+        const hatP1 = document.getElementById('capy-hat-p1');
+        const hatP2 = document.getElementById('capy-hat-p2');
+        const screenP1 = document.getElementById('p1-screen');
+        const screenP2 = document.getElementById('p2-screen');
+        const floorP1 = document.getElementById('floor-p1');
+        const floorP2 = document.getElementById('floor-p2');
+        const goP1 = document.getElementById('p1-local-gameover');
+        const goP2 = document.getElementById('p2-local-gameover');
+
+        // ENGINES DATA BASE
+        let totalCoins = parseInt(localStorage.getItem('capy_coins_w')) || 0;
+        let unlockedSkins = JSON.parse(localStorage.getItem('capy_unlocked_w')) || ['default'];
+        
+        let activeSkin = localStorage.getItem('capy_active_w') || 'default'; 
+        let activeSkinP1 = localStorage.getItem('capy_p1_skin') || 'default';
+        let activeSkinP2 = localStorage.getItem('capy_p2_skin') || 'default';
+        
+        let highScore = parseInt(localStorage.getItem('capy_highscore_w')) || 0;
+        let gameMode = 1; 
+        let targetWardrobePlayer = 1; 
+
+        const skinsData = {
+            default: { name: "Coquette", hat: "🎀", class: "s-default", bgClass: "bg-world-default", floorColor: "#E8CCD7", particles: 'rainbow', jumpParticles: ['💖', '💝', '🌸', '✨'] },
+            police: { name: "Policia", hat: "👮", class: "s-police", bgClass: "bg-world-police", floorColor: "#7F8C8D", particles: ['🚨', '🔴', '🔵'], jumpParticles: ['⭐', '🌟', '🔔', '👮'] },
+            thief: { name: "Lladre", hat: "🥷", class: "s-thief", bgClass: "bg-world-thief", floorColor: "#5C3A21", particles: ['💰', '💵', '🪙'], jumpParticles: ['💰', '💎', '🪙', '💸'] },
+            hero: { name: "Superman", hat: "🦸", class: "s-hero", bgClass: "bg-world-hero", floorColor: "#228B22", particles: ['⭐', '💫', '⚡'], jumpParticles: ['⚡', '💥', '✊', '🔥'] },
+            spidey: { name: "Spiderman", hat: "🕸️", class: "s-spidey", bgClass: "bg-world-spidey", floorColor: "#1D2030", particles: ['🕸️', '🕷️', '🔴'], jumpParticles: ['🕷️', '🕸️', '🔴', '🔵'] },
+            zoro: { name: "Capibara Zoro", hat: "⚔️", class: "s-zoro", bgClass: "bg-world-zoro", floorColor: "#1A2E33", particles: ['🍃', '🟢'], jumpParticles: ['⚔️', '🗡️', '💥'] },
+            ironman: { name: "Capibara Ironman", hat: "🚀", class: "s-ironman", bgClass: "bg-world-ironman", floorColor: "#553333", particles: ['✨', '🟡'], jumpParticles: ['🔥', '💥', '💨'] },
+            hulk: { name: "Capibara Hulk", hat: "😡", class: "s-hulk", bgClass: "bg-world-hulk", floorColor: "#222222", particles: ['🟢', '💥'], jumpParticles: ['💪', '💥', '👊'] },
+            goku: { name: "Capibara Goku", hat: "💨", class: "s-goku", bgClass: "bg-world-goku", floorColor: "#5F9EA0", particles: ['✨', '🔵'], jumpParticles: ['⚡', '💥', '☄️'] }
+        };
+
+        // LÒGICA DE POSICIÓ JUGADORS
+        let p1_y = 30, p1_v = 0, p1_jump = false, p1_alive = true;
+        let p2_y = 30, p2_v = 0, p2_jump = false, p2_alive = true;
+        let isJumping = false, yPosition = 40, yVelocity = 0; 
+
+        const gravity = 0.6;
+        const jumpStrength = 13;
+
+        let score = 0;
+        let coinsEarnedThisRun = 0;
+        let gameSpeed = 6;
+        let isGameOver = true;
+
+        let obstacles = []; 
+        let obstaclesP1 = [], obstaclesP2 = []; 
+
+        let gameLoopId, particleLoopId;
+        let spawnTimeout1, spawnTimeout2; 
+
+        function addSecretCoins(event) {
+            event.stopPropagation();
+            totalCoins += 1000;
+            updateGlobalCoins();
+            if (document.getElementById('menu-shop').style.display === 'flex') renderShop();
+        }
+
+        function updateGlobalCoins() {
+            localStorage.setItem('capy_coins_w', totalCoins);
+            coinsHud.innerText = totalCoins;
+            highscoreDisplay.innerText = highScore;
+            document.getElementById('shop-coins').innerText = totalCoins;
+        }
+
+        // CONTROL MECÀNIC DELS BOTONS DEL MENU PRINCIPAL
+        function selectMainMenuMode(mode) {
+            gameMode = mode;
+            if (mode === 1) {
+                startGame(); // Mode 1 jugador arrenca a l'acte
+            } else {
+                openScreen('menu-main-mp'); // Mode 2 jugadors obre el menú secundari
+            }
+        }
+
+        function openScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById(screenId).style.display = 'flex';
+            
+            if (screenId === 'menu-shop') renderShop();
+            if (screenId === 'menu-wardrobe') renderWardrobe();
+            if (screenId === 'menu-main' || screenId === 'menu-main-mp') {
+                isGameOver = true;
+                mpContainer.style.display = 'none';
+                capybara.style.display = gameMode === 1 ? 'block' : 'none';
+                floor.style.display = gameMode === 1 ? 'block' : 'none';
+                goP1.style.display = 'none';
+                goP2.style.display = 'none';
+                applyActiveEnvironment();
+            }
+        }
+
+        function goBackFromSubmenus() { goToActiveMainMenu(); }
+        function goBackFromWardrobe() { goToActiveMainMenu(); }
+
+        function goToActiveMainMenu() {
+            if (gameMode === 1) openScreen('menu-main');
+            else openScreen('menu-main-mp');
+        }
+
+        function openWardrobeMP(playerNum) {
+            targetWardrobePlayer = playerNum;
+            document.getElementById('wardrobe-title').innerText = `Vestuari de Jugador ${playerNum}`;
+            openScreen('menu-wardrobe');
+        }
+
+        function applyActiveEnvironment() {
+            if (gameMode === 1) {
+                const current = skinsData[activeSkin];
+                capybara.className = "capybara-engine " + current.class;
+                capyHat.innerText = current.hat;
+                gameWindow.className = current.bgClass;
+                floor.style.backgroundColor = current.floorColor;
+            } else {
+                gameWindow.className = "bg-world-default";
+                const c1 = skinsData[activeSkinP1];
+                capyP1.className = "capybara-engine capy-p1 " + c1.class;
+                hatP1.innerText = c1.hat;
+                screenP1.className = "player-screen " + c1.bgClass;
+                floorP1.style.backgroundColor = c1.floorColor;
+
+                const c2 = skinsData[activeSkinP2];
+                capyP2.className = "capybara-engine capy-p2 " + c2.class;
+                hatP2.innerText = c2.hat;
+                screenP2.className = "player-screen " + c2.bgClass;
+                floorP2.style.backgroundColor = c2.floorColor;
+            }
+        }
+
+        function generateHTMLPreview(skinClass, hatEmoji) {
+            return `
+                <div class="card-preview-box">
+                    <div class="capybara-engine ${skinClass}">
+                        <div class="c-accessory">${hatEmoji}</div>
+                        <div class="c-body">
+                            <div class="c-head"><div class="c-eye"></div></div>
+                            <div class="c-leg l-1"></div><div class="c-leg l-2"></div>
+                            <div class="c-leg l-3"></div><div class="c-leg l-4"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // RENDERITZAR BOTIGA
+        function renderShop() {
+            const grid = document.getElementById('shop-grid');
+            grid.innerHTML = '';
+            Object.keys(skinsData).forEach(key => {
+                if (key === 'default') return;
+                const skin = skinsData[key];
+                const isOwned = unlockedSkins.includes(key);
+                const card = document.createElement('div');
+                card.classList.add('skin-card');
+                card.innerHTML = `
+                    <div class="skin-name">${skin.name}</div>
+                    ${generateHTMLPreview(skin.class, skin.hat)}
+                    <button class="btn" style="width:110px; font-size:12px; padding:6px 0; margin: 0;" 
+                        ${isOwned ? 'disabled' : ''} onclick="buySkin('${key}')">
+                        ${isOwned ? 'Comprat' : '150 🪙'}
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function buySkin(key) {
+            if (totalCoins >= 150 && !unlockedSkins.includes(key)) {
+                totalCoins -= 150;
+                unlockedSkins.push(key);
+                localStorage.setItem('capy_unlocked_w', JSON.stringify(unlockedSkins));
+                updateGlobalCoins();
+                renderShop();
+            } else if (!unlockedSkins.includes(key)) {
+                alert("Monedes insuficients! Has de recollir més monedes jugant! 😉🪙");
+            }
+        }
+
+        // RENDERITZAR VESTUARI
+        function renderWardrobe() {
+            const grid = document.getElementById('wardrobe-grid');
+            grid.innerHTML = '';
+            unlockedSkins.forEach(key => {
+                const skin = skinsData[key];
+                let isActive = false;
+                if (gameMode === 1) isActive = activeSkin === key;
+                else isActive = (targetWardrobePlayer === 1 ? activeSkinP1 : activeSkinP2) === key;
+
+                const card = document.createElement('div');
+                card.classList.add('skin-card');
+                if(isActive) card.style.borderColor = 'var(--pink-dark)';
+                
+                card.innerHTML = `
+                    <div class="skin-name">${skin.name}</div>
+                    ${generateHTMLPreview(skin.class, skin.hat)}
+                    <button class="btn" style="width:110px; font-size:12px; padding:6px 0; margin: 0; background-color:${isActive?'#D14D72':'#FFB6C1'}" 
+                        onclick="selectSkin('${key}')">
+                        ${isActive ? 'Equipat' : 'Equipar'}
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function selectSkin(key) {
+            if (gameMode === 1) {
+                activeSkin = key;
+                localStorage.setItem('capy_active_w', activeSkin);
+            } else {
+                if (targetWardrobePlayer === 1) {
+                    activeSkinP1 = key;
+                    localStorage.setItem('capy_p1_skin', activeSkinP1);
+                } else {
+                    activeSkinP2 = key;
+                    localStorage.setItem('capy_p2_skin', activeSkinP2);
+                }
+            }
+            applyActiveEnvironment();
+            renderWardrobe();
+        }
+
+        // --- CONTROLS DE JOC ---
+        window.addEventListener('keydown', e => { 
+            if (isGameOver) return;
+            if (gameMode === 1) {
+                if (e.code === 'Space' || e.code === 'KeyW' || e.code === 'ArrowUp') { e.preventDefault(); triggerJump(); }
+            } else {
+                if (e.code === 'KeyW') { e.preventDefault(); makeJumpMP(1); }
+                if (e.code === 'ArrowUp') { e.preventDefault(); makeJumpMP(2); }
+            }
+        });
+
+        gameWindow.addEventListener('mousedown', e => { 
+            if (isGameOver || gameMode === 2) return;
+            if (!e.target.classList.contains('btn') && !e.target.classList.contains('btn-back-fixed') && !e.target.classList.contains('btn-credits-fixed') && e.target.id !== 'secret-cheat-btn') {
+                triggerJump(); 
+            }
+        });
+
+        function triggerJump() {
+            if (!isJumping) { isJumping = true; yVelocity = jumpStrength; spawnJumpEffects(1, yPosition, gameWindow); }
+        }
+
+        function triggerJumpMP(playerNum, event) {
+            if (isGameOver) return;
+            event.stopPropagation();
+            makeJumpMP(playerNum);
+        }
+
+        function makeJumpMP(playerNum) {
+            if (playerNum === 1 && !p1_jump && p1_alive) { p1_jump = true; p1_v = jumpStrength; spawnJumpEffects(1, p1_y, screenP1); }
+            if (playerNum === 2 && !p2_jump && p2_alive) { p2_jump = true; p2_v = jumpStrength; spawnJumpEffects(2, p2_y, screenP2); }
+        }
+
+        function spawnJumpEffects(playerNum, currentY, targetContainer) {
+            const skinKey = gameMode === 1 ? activeSkin : (playerNum === 1 ? activeSkinP1 : activeSkinP2);
+            const pool = skinsData[skinKey].jumpParticles;
+            for (let i = 0; i < 4; i++) {
+                setTimeout(() => {
+                    if (isGameOver) return;
+                    const effect = document.createElement('div');
+                    effect.classList.add('pop-jump-effect');
+                    effect.innerHTML = pool[Math.floor(Math.random() * pool.length)];
+                    effect.style.left = '105px';
+                    effect.style.bottom = (currentY + 15) + 'px';
+                    targetContainer.appendChild(effect);
+                    setTimeout(() => effect.remove(), 600);
+                }, i * 60);
+            }
+        }
+
+        function generateCustomParticles() {
+            if (isGameOver) return;
+            if (gameMode === 1) {
+                createParticlesForPlayer(activeSkin, yPosition, gameWindow);
+            } else {
+                if (p1_alive) createParticlesForPlayer(activeSkinP1, p1_y, screenP1);
+                if (p2_alive) createParticlesForPlayer(activeSkinP2, p2_y, screenP2);
+            }
+        }
+
+        function createParticlesForPlayer(skinKey, currentY, targetContainer) {
+            const currentSkin = skinsData[skinKey];
+            if (currentSkin.particles === 'rainbow') {
+                const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA'];
+                colors.forEach((color, index) => {
+                    const brick = document.createElement('div');
+                    brick.classList.add('rainbow-brick');
+                    brick.style.backgroundColor = color;
+                    brick.style.left = '72px';
+                    brick.style.setProperty('--random-y', (Math.random() * 8 - 9) + 'px');
+                    brick.style.bottom = (currentY + 6 + (index * 4.5)) + 'px';
+                    targetContainer.appendChild(brick);
+                    setTimeout(() => brick.remove(), 400);
+                });
+            } else {
+                const pool = currentSkin.particles;
+                for(let i = 0; i < 2; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('trail-particle');
+                    particle.innerHTML = pool[Math.floor(Math.random() * pool.length)];
+                    particle.style.left = '75px';
+                    particle.style.setProperty('--random-y', (Math.random() * 40 - 20) + 'px');
+                    particle.style.bottom = (currentY + Math.random() * 25 + 5) + 'px';
+                    targetContainer.appendChild(particle);
+                    setTimeout(() => particle.remove(), 500);
+                }
+            }
+        }
+
+        // --- SPAWN ASÍNCRON DE CACTUS ---
+        function spawnObstacle1P() {
+            if (isGameOver || gameMode !== 1) return;
+            const obsElement = document.createElement('div');
+            obsElement.classList.add('game-obstacle');
+            obsElement.innerHTML = "🌵"; 
+            let left = 820;
+            obsElement.style.left = left + 'px';
+            gameWindow.appendChild(obsElement);
+            obstacles.push({ element: obsElement, left: left, width: 30, height: 45, passed: false });
+
+            let randomTime = Math.random() * (1600 - 950) + 950;
+            spawnTimeout1 = setTimeout(spawnObstacle1P, randomTime / (gameSpeed / 6));
+        }
+
+        function spawnObstacleP1() {
+            if (isGameOver || !p1_alive || gameMode !== 2) return;
+            const obs = document.createElement('div');
+            obs.classList.add('game-obstacle', 'mp-obstacle');
+            obs.innerHTML = "🌵";
+            let left = 820; obs.style.left = left + 'px';
+            screenP1.appendChild(obs);
+            obstaclesP1.push({ element: obs, left: left, width: 30, height: 45, passed: false });
+
+            let randomTime = Math.random() * (1700 - 900) + 900; 
+            spawnTimeout1 = setTimeout(spawnObstacleP1, randomTime / (gameSpeed / 6));
+        }
+
+        function spawnObstacleP2() {
+            if (isGameOver || !p2_alive || gameMode !== 2) return;
+            const obs = document.createElement('div');
+            obs.classList.add('game-obstacle', 'mp-obstacle');
+            obs.innerHTML = "🌵";
+            let left = 820; obs.style.left = left + 'px';
+            screenP2.appendChild(obs);
+            obstaclesP2.push({ element: obs, left: left, width: 30, height: 45, passed: false });
+
+            let randomTime = Math.random() * (1750 - 850) + 850; 
+            spawnTimeout2 = setTimeout(spawnObstacleP2, randomTime / (gameSpeed / 6));
+        }
+
+        // --- BUCLE PRINCIPAL DE MOVIMENT ---
+        function update() {
+            if (isGameOver) return;
+
+            score++;
+            scoreDisplay.innerText = score;
+            if (score % 500 === 0) gameSpeed += 0.5;
+
+            if (gameMode === 1) {
+                // MÓN 1 JUGADOR
+                if (isJumping) {
+                    yVelocity -= gravity; yPosition += yVelocity;
+                    if (yPosition <= 40) { yPosition = 40; isJumping = false; yVelocity = 0; }
+                }
+                capybara.style.bottom = yPosition + 'px';
+
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    let obs = obstacles[i]; obs.left -= gameSpeed; obs.element.style.left = obs.left + 'px';
+                    if (!obs.passed && obs.left < 80) { 
+                        obs.passed = true; totalCoins += 1; coinsEarnedThisRun += 1; updateGlobalCoins(); showCoinAlert(gameWindow, yPosition);
+                    }
+                    if (obs.left < -35) { obs.element.remove(); obstacles.splice(i, 1); continue; }
+                    if (80 < obs.left + obs.width && 80 + 55 > obs.left && yPosition < 40 + obs.height && yPosition + 45 > 40) {
+                        triggerGameOver(1, "Game Over 🎀😢"); return;
+                    }
+                }
+                if (score > highScore) { highScore = score; localStorage.setItem('capy_highscore_w', highScore); highscoreDisplay.innerText = highScore; }
+
+            } else {
+                // MÓN COMPARTIT 2 JUGADORS
+                if (p1_alive) {
+                    if (p1_jump) {
+                        p1_v -= gravity; p1_y += p1_v;
+                        if (p1_y <= 30) { p1_y = 30; p1_jump = false; p1_v = 0; }
+                    }
+                    capyP1.style.bottom = p1_y + 'px';
+
+                    for (let i = obstaclesP1.length - 1; i >= 0; i--) {
+                        let obs = obstaclesP1[i]; obs.left -= gameSpeed; obs.element.style.left = obs.left + 'px';
+                        if (!obs.passed && obs.left < 80) { obs.passed = true; totalCoins += 1; updateGlobalCoins(); showCoinAlert(screenP1, p1_y); }
+                        if (obs.left < -35) { obs.element.remove(); obstaclesP1.splice(i, 1); continue; }
+                        if (80 < obs.left + obs.width && 80 + 55 > obs.left && p1_y < 30 + obs.height && p1_y + 45 > 30) {
+                            eliminatePlayer(1);
+                        }
+                    }
+                }
+
+                if (p2_alive) {
+                    if (p2_jump) {
+                        p2_v -= gravity; p2_y += p2_v;
+                        if (p2_y <= 30) { p2_y = 30; p2_jump = false; p2_v = 0; }
+                    }
+                    capyP2.style.bottom = p2_y + 'px';
+
+                    for (let i = obstaclesP2.length - 1; i >= 0; i--) {
+                        let obs = obstaclesP2[i]; obs.left -= gameSpeed; obs.element.style.left = obs.left + 'px';
+                        if (!obs.passed && obs.left < 80) { obs.passed = true; totalCoins += 1; updateGlobalCoins(); showCoinAlert(screenP2, p2_y); }
+                        if (obs.left < -35) { obs.element.remove(); obstaclesP2.splice(i, 1); continue; }
+                        if (80 < obs.left + obs.width && 80 + 55 > obs.left && p2_y < 30 + obs.height && p2_y + 45 > 30) {
+                            eliminatePlayer(2);
+                        }
+                    }
+                }
+
+                if (!p1_alive && !p2_alive) {
+                    isGameOver = true;
+                    clearInterval(gameLoopId);
+                    clearInterval(particleLoopId);
+                }
+            }
+        }
+
+        function eliminatePlayer(num) {
+            if (num === 1) {
+                p1_alive = false;
+                clearTimeout(spawnTimeout1);
+                goP1.style.display = 'flex'; 
+                obstaclesP1.forEach(o => o.element.remove());
+                obstaclesP1 = [];
+            } else {
+                p2_alive = false;
+                clearTimeout(spawnTimeout2);
+                goP2.style.display = 'flex'; 
+                obstaclesP2.forEach(o => o.element.remove());
+                obstaclesP2 = [];
+            }
+        }
+
+        function showCoinAlert(container, currentY) {
+            const alert = document.createElement('div');
+            alert.classList.add('coin-alert');
+            alert.innerText = '+1 🪙';
+            alert.style.left = '145px';
+            alert.style.bottom = (currentY + 45) + 'px';
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 550);
+        }
+
+        // --- SISTEMA D'INICI DE PARTIDES REAL ---
+        function startGame() {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            goP1.style.display = 'none';
+            goP2.style.display = 'none';
+            
+            document.querySelectorAll('.game-obstacle, .trail-particle, .rainbow-brick').forEach(el => el.remove());
+            obstacles = []; obstaclesP1 = []; obstaclesP2 = [];
+            
+            isGameOver = false;
+            score = 0;
+            coinsEarnedThisRun = 0;
+            gameSpeed = 6;
+            
+            scoreDisplay.innerText = "0";
+            highscoreDisplay.innerText = highScore;
+
+            clearInterval(gameLoopId);
+            clearInterval(particleLoopId);
+            clearTimeout(spawnTimeout1);
+            clearTimeout(spawnTimeout2);
+
+            if (gameMode === 1) {
+                mpContainer.style.display = 'none';
+                capybara.style.display = 'block';
+                floor.style.display = 'block';
+                yPosition = 40; yVelocity = 0; isJumping = false;
+                
+                setTimeout(spawnObstacle1P, 1200);
+            } else {
+                capybara.style.display = 'none';
+                floor.style.display = 'none';
+                mpContainer.style.display = 'flex';
+                
+                p1_y = 30; p1_v = 0; p1_jump = false; p1_alive = true;
+                p2_y = 30; p2_v = 0; p2_jump = false; p2_alive = true;
+                
+                setTimeout(spawnObstacleP1, 1000); 
+                setTimeout(spawnObstacleP2, 1400); 
+            }
+
+            applyActiveEnvironment();
+            updateGlobalCoins();
+
+            gameLoopId = setInterval(update, 1000 / 60);
+            particleLoopId = setInterval(generateCustomParticles, 55);
+        }
+
+        function triggerGameOver(modeFinish, textResult) {
+            isGameOver = true;
+            clearInterval(gameLoopId);
+            clearInterval(particleLoopId);
+            clearTimeout(spawnTimeout1);
+
+            document.getElementById('gameover-title').innerText = textResult;
+            document.getElementById('gameover-sub').innerText = `Monedes aconseguides: +${coinsEarnedThisRun}`;
+            openScreen('menu-gameover');
+        }
+
+        updateGlobalCoins();
+        applyActiveEnvironment();
+        openScreen('menu-main');
+    </script>
+</body>
+</html>
