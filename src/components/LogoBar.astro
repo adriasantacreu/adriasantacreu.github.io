@@ -5,8 +5,12 @@ interface Props {
 const { logos } = Astro.props
 
 const logoMap: Record<string, { src: string; invert?: boolean }> = {
-  mcp:               { src: "/logos/mcp.svg", invert: true },
+  mcp:                { src: "/logos/mcp.svg", invert: true },
   "google-classroom": { src: "/logos/google-classroom.svg" },
+  python:             { src: "/logos/python.svg" },
+  opencv:             { src: "/logos/opencv.svg" },
+  "google-forms":     { src: "/logos/google-forms.svg" },
+  "google-drive":     { src: "/logos/google-drive.svg" },
 }
 ---
 

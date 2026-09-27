@@ -31,6 +31,16 @@ const drawerLinksMap: Record<string, { TEXT: string; HREF: string; SECTION: stri
 }
 const drawerLinks = drawerLinksMap[locale] ?? drawerLinksMap["ca"]!
 const searchHref = locale === "ca" ? "/search" : `/${locale}/search`
+
+const caOnlySections = new Set(["eina", "legal"])
+const isTranslated = !caOnlySections.has(section)
+const langLinks = isTranslated
+  ? {
+      ca: canonicalPath,
+      en: `/en${canonicalPath === "/" ? "" : canonicalPath}`,
+      es: `/es${canonicalPath === "/" ? "" : canonicalPath}`,
+    }
+  : null
 ---
 
 <div id="drawer" class="fixed inset-0 h-0 z-40 overflow-hidden flex flex-col items-center justify-center md:hidden bg-neutral-100 dark:bg-neutral-900 transition-[height] duration-300 ease-in-out">
@@ -43,6 +53,14 @@ const searchHref = locale === "ca" ? "/search" : `/${locale}/search`
       ))
     }
   </nav>
+
+  {langLinks && (
+    <div class="flex items-center gap-1.5 mt-5">
+      <a href={langLinks.ca} class={cn("h-7 px-2.5 rounded text-xs font-semibold transition-colors duration-300 ease-in-out flex items-center justify-center", locale === "ca" ? "bg-black dark:bg-white text-white dark:text-black" : "hover:bg-black/5 dark:hover:bg-white/20 text-current")}>CA</a>
+      <a href={langLinks.en} class={cn("h-7 px-2.5 rounded text-xs font-semibold transition-colors duration-300 ease-in-out flex items-center justify-center", locale === "en" ? "bg-black dark:bg-white text-white dark:text-black" : "hover:bg-black/5 dark:hover:bg-white/20 text-current")}>EN</a>
+      <a href={langLinks.es} class={cn("h-7 px-2.5 rounded text-xs font-semibold transition-colors duration-300 ease-in-out flex items-center justify-center", locale === "es" ? "bg-black dark:bg-white text-white dark:text-black" : "hover:bg-black/5 dark:hover:bg-white/20 text-current")}>ES</a>
+    </div>
+  )}
 
   <div class="flex gap-1 mt-5">
     <a href={searchHref} aria-label={`Search blog posts and projects on ${SITE.TITLE}`} class={cn("size-9 rounded-full p-2 items-center justify-center bg-transparent hover:bg-black/5 dark:hover:bg-white/20 stroke-current hover:stroke-black hover:dark:stroke-white border border-black/10 dark:border-white/25 transition-colors duration-300 ease-in-out", section === "search" ? "pointer-events-none bg-black dark:bg-white text-white dark:text-black" : "")}>

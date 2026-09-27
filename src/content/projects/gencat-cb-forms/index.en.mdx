@@ -14,6 +14,11 @@ tags:
 lang: en
 demoUrl: https://drive.google.com/drive/folders/1J-LcDfdiySsMW4sWm-beSx4uvzT3odDm
 repoUrl: https://github.com/adriasantacreu/gencat-cb-forms
+logos:
+  - python
+  - opencv
+  - google-forms
+  - google-drive
 ---
 
 import Mermaid from '@components/Mermaid.astro'
@@ -72,9 +77,10 @@ def autocrop_tight(img, pad=6, white_thresh=248):
     return img[max(0, y0-pad):min(h, y1+pad+1), max(0, x0-pad):min(w, x1+pad+1)]
 ```
 
-![Crop of a multiple-choice question: the box hugs the ink of the four answers](/images/projects/gencat-cb-forms/retall_exemple.png)
-
-*Automatically generated crop, with no manual intervention. The bounding box wraps only the ink of the prompt and the options, with no leftover white margin.*
+<figure>
+  <img src="/images/projects/gencat-cb-forms/retall_exemple.png" alt="Crop of a multiple-choice question: the box hugs the ink of the four answers" />
+  <figcaption>Automatically generated crop with zero manual intervention. The bounding box wraps only the ink of the prompt and options, eliminating residual white margins.</figcaption>
+</figure>
 
 #### 3. Cross-Contamination Auditing with Tesseract OCR
 To prevent context passages from leaking the subsequent question prompts, each image is analyzed via Tesseract OCR (`lang="cat"`). If regex patterns matching question headers (`r"^\s*([0-9]{1,2})\.\s+([A-ZÀ-Ú][a-zà-ú]+)"`) are found, the crop is rejected.
@@ -97,9 +103,10 @@ The pipeline generated a comprehensive, publicly accessible suite of **18 comple
 
 Conversion time per full booklet dropped from **over an hour to under 30 seconds**.
 
-![Generated Google Form: the tight crop of the elevator activity context, followed by the question](/images/projects/gencat-cb-forms/formulari_preview.png)
-
-*The resulting form: the activity context, cropped and audited, with its matching question right below.*
+<figure>
+  <img src="/images/projects/gencat-cb-forms/formulari_preview.png" alt="Generated Google Form: the tight crop of the elevator activity context, followed by the question" />
+  <figcaption>The resulting Google Form: audited activity context tightly cropped by the pipeline, with the corresponding auto-grading question directly below.</figcaption>
+</figure>
 
 ---
 

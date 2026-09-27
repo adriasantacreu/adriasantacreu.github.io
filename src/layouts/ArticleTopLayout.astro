@@ -20,7 +20,21 @@ const logos  = collection === "projects" ? (data.logos ?? []) : []
 const logoMeta: Record<string, { src: string; invert?: boolean }> = {
   mcp:                { src: "/logos/mcp.svg", invert: true },
   "google-classroom": { src: "/logos/google-classroom.svg" },
+  python:             { src: "/logos/python.svg" },
+  opencv:             { src: "/logos/opencv.svg" },
+  "google-forms":     { src: "/logos/google-forms.svg" },
+  "google-drive":     { src: "/logos/google-drive.svg" },
 }
+
+const currentLocale = locale || "ca"
+const backText = {
+  ca: collection === "projects" ? "Tornar a projectes" : "Tornar al blog",
+  es: collection === "projects" ? "Volver a proyectos" : "Volver al blog",
+  en: `Back to ${collection}`,
+}[currentLocale] || `Back to ${collection}`
+
+const demoText = { ca: "Veure demo", es: "Ver demo", en: "See Demo" }[currentLocale] || "See Demo"
+const repoText = { ca: "Veure repositori", es: "Ver repositorio", en: "See Repository" }[currentLocale] || "See Repository"
 ---
 
 <div>
@@ -30,7 +44,7 @@ const logoMeta: Record<string, { src: string; invert?: boolean }> = {
       <polyline points="12 19 5 12 12 5" class="translate-x-1 group-hover:translate-x-0 transition-all duration-300 ease-in-out" />
     </svg>
     <div class="w-full group-hover:text-black group-hover:dark:text-white transition-colors duration-300 ease-in-out">
-      Back to {collection}
+      {backText}
     </div>
   </a>
   <div class="flex flex-wrap text-sm uppercase mt-12 gap-3 opacity-75">
@@ -51,13 +65,13 @@ const logoMeta: Record<string, { src: string; invert?: boolean }> = {
     {title}
   </h1>
   {logos.length > 0 &&
-    <div class="flex items-center justify-center gap-8 mt-6 mb-2">
+    <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 mt-6 mb-2">
       {logos.map((key, i) => {
         const meta = logoMeta[key]
         if (!meta) return null
         return <>
-          {i > 0 && <span class="text-7xl font-thin opacity-50 select-none">×</span>}
-          <img src={meta.src} alt={key} class:list={["h-36 w-auto", meta.invert && "dark:invert"]} />
+          {i > 0 && <span class:list={[logos.length > 2 ? "text-3xl sm:text-5xl md:text-6xl" : "text-5xl sm:text-7xl", "font-thin opacity-50 select-none"]}>×</span>}
+          <img src={meta.src} alt={key} class:list={[logos.length > 2 ? "h-14 sm:h-18 md:h-20 w-auto" : "h-24 sm:h-36 w-auto", meta.invert && "dark:invert"]} />
         </>
       })}
     </div>
@@ -73,7 +87,7 @@ const logoMeta: Record<string, { src: string; invert?: boolean }> = {
           <use href="/ui.svg#globe" class="fill-current group-hover:fill-black group-hover:dark:fill-white blend"/>
         </svg>
         <span class="text-current group-hover:text-black group-hover:dark:text-white blend">
-          See Demo
+          {demoText}
         </span>
       </a>
     }
@@ -83,7 +97,7 @@ const logoMeta: Record<string, { src: string; invert?: boolean }> = {
           <use href="/ui.svg#link" class="fill-current group-hover:fill-black group-hover:dark:fill-white blend"/>
         </svg>
         <span class="text-current group-hover:text-black group-hover:dark:text-white blend">
-          See Repository
+          {repoText}
         </span>
       </a>
     }
