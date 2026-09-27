@@ -29,7 +29,10 @@ const broken = new Map()
 for (const file of htmlFiles(dist)) {
   const html = readFileSync(file, "utf8")
   const from = `/${file.slice(dist.length + 1)}`
-  for (const match of html.matchAll(/href="([^"]+)"/g)) {
+  // També els src: les imatges van en <img src> i no en href, i una ruta d'imatge
+  // trencada deixa la pàgina igual de trencada que un enllaç mort.
+  const refs = [...html.matchAll(/href="([^"]+)"/g), ...html.matchAll(/<img[^>]+src="([^"]+)"/g)]
+  for (const match of refs) {
     const href = match[1]
     if (/^(https?:|mailto:|tel:|data:|#)/.test(href)) continue
     const clean = href.split("#")[0].split("?")[0]

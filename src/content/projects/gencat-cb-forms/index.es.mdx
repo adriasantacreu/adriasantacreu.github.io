@@ -72,6 +72,10 @@ def autocrop_tight(img, pad=6, white_thresh=248):
     return img[max(0, y0-pad):min(h, y1+pad+1), max(0, x0-pad):min(w, x1+pad+1)]
 ```
 
+![Recorte de una pregunta de test: la caja se ajusta a la tinta de las cuatro respuestas](/images/projects/gencat-cb-forms/retall_exemple.png)
+
+*Recorte generado sin ninguna intervención manual. La caja envolvente abraza únicamente la tinta del enunciado y de las opciones, sin margen blanco residual.*
+
 #### 3. Auditoría de Contaminación con OCR Tesseract en Catalán
 Para asegurar que ningún contexto de actividad contenga texto de la pregunta siguiente, cada imagen de contexto pasa por un filtro de OCR Tesseract (`lang="cat"`). Si detecta patrones como `r"^\s*([0-9]{1,2})\.\s+([A-ZÀ-Ú][a-zà-ú]+)"`, la prueba es rechazada automáticamente.
 
@@ -92,6 +96,10 @@ El pipeline ha permitido generar y publicar el banco completo de **18 formulario
   * **Ciencia y Tecnología:** 2026, 2025, 2024.
 
 El tiempo necesario para transformar cualquier cuaderno entero ha pasado de **más de una hora a menos de 30 segundos**.
+
+![Formulario de Google Forms generado: el recorte ajustado del contexto de la actividad del ascensor, seguido de la pregunta](/images/projects/gencat-cb-forms/formulari_preview.png)
+
+*El formulario resultante: el contexto de la actividad, recortado y auditado, con su pregunta correspondiente justo debajo.*
 
 ---
 
