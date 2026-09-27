@@ -16,10 +16,10 @@ repoUrl: https://github.com/adriasantacreu/gas-doc-generator
 ### 💡 Motivation
 This project was born out of a real need in the management of school tutoring sessions. Manually generating personalised reports for each student — copying documents, renaming them, editing data — was a tedious process taking over 4 hours with a high risk of human error.
 
-### 🛠️ The Technical Solution
+### 🛠️ Technical solution
 I developed a system integrated into **Google Sheets** that acts as a document generation engine. Using **JavaScript (Google Apps Script)**, the tool reads data from a spreadsheet and dynamically injects it into Google Docs templates.
 
-### ✨ Key Features
+### ✨ Key features
 * **Professional Interface**: Custom menus and modal windows built with HTML5 and CSS3 (Google Sans).
 * **Smart Template System**: Automatic detection of templates in the same folder as the file, ensuring portability.
 * **Multi-section Injection**: Replacement of `{{tag}}` variables in the body, headers, footers, and even in the file title.

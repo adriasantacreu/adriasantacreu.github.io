@@ -15,11 +15,11 @@ repoUrl: https://github.com/adriasantacreu
 ---
 
 ### El sistema
-He desarrollado un flujo donde la **IA (LLM)** genera el contenido académico, el cual se procesa mediante **Python** para asegurar la coherencia física y se maqueta automáticamente en **LaTeX**.
+He desarrollado un flujo donde un **modelo LLM** genera el contenido académico, el cual se procesa mediante **Python** para asegurar la coherencia científica y se maqueta automáticamente en **LaTeX**.
 
 Este método permite:
 * Generar variantes únicas de exámenes y ejercicios.
 * Mantener una calidad tipográfica profesional científica.
 * Automatizar la corrección mediante metadatos en el mismo código LaTeX.
 
-El motor de orquestación de este proyecto es **n8n**, que conecta las APIs de los modelos de lenguaje con el servidor local de renderizado.
+El motor de orquestación de este proyecto es **n8n**, que conecta las llamadas a los modelos de lenguaje con el servidor local de renderizado.

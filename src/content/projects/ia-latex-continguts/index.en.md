@@ -15,11 +15,11 @@ repoUrl: https://github.com/adriasantacreu
 ---
 
 ### The system
-I developed a workflow where **AI (LLM)** generates the academic content, which is then processed by **Python** to ensure physical consistency and automatically typeset in **LaTeX**.
+I developed a workflow where an **LLM model** generates academic content, which is then processed with **Python** to ensure scientific consistency and automatically typeset in **LaTeX**.
 
 This approach makes it possible to:
 * Generate unique variants of exams and exercises.
 * Maintain professional scientific typographic quality.
-* Automate grading through metadata embedded in the LaTeX source code.
+* Automate grading through metadata embedded directly in the LaTeX source code.
 
-The orchestration engine for this project is **n8n**, which connects the language model APIs with the local rendering server.
+The orchestration engine for this project is **n8n**, which connects language model requests with the local rendering server.

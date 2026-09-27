@@ -11,17 +11,15 @@ import MeteorShower from "@components/MeteorShower.astro";
 const projects = (await getCollection("projects"))
   .filter((project) => !project.data.draft && project.data.lang === "es")
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 3);
+  .slice(0, 4);
 
 const stack = [
   { text: "Python", icon: "python", href: "https://www.python.org" },
+  { text: "MCP", icon: "mcp", href: "https://modelcontextprotocol.io" },
   { text: "n8n", icon: "n8n", href: "https://n8n.io" },
+  { text: "Apps Script", icon: "googleappsscript", href: "https://developers.google.com/apps-script" },
   { text: "LaTeX", icon: "latex", href: "https://www.latex-project.org" },
-  {
-    text: "AppScript",
-    icon: "javascript",
-    href: "https://developers.google.com/apps-script",
-  },
+  { text: "TypeScript", icon: "typescript", href: "https://www.typescriptlang.org" },
   { text: "Astro", icon: "astro", href: "https://astro.build" },
 ];
 ---
@@ -123,7 +121,7 @@ const stack = [
     <section class="animate">
       <div class="space-y-4">
         <p class="font-semibold text-black dark:text-white">
-          Herramientas y Tecnologías
+          Herramientas y tecnologías
         </p>
         <div class="flex flex-wrap items-center gap-2 mt-5">
           {

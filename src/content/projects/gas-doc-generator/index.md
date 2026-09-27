@@ -15,12 +15,10 @@ repoUrl: https://github.com/adriasantacreu/gas-doc-generator
 ### 💡 Motivació
 Aquest projecte neix d'una necessitat real en la gestió de tutories escolars. La tasca de generar manualment informes personalitzats per a cada alumne (còpies, canvis de nom, edició de dades) era un procés tediós de més de 4 hores amb un alt risc d'error humà.
 
-### 🛠️ La Solució Tècnica
+### 🛠️ Solució tècnica
 He desenvolupat un sistema integrat a **Google Sheets** que actua com a motor de generació documental. Utilitzant **JavaScript (Google Apps Script)**, l'eina llegeix dades d'un full de càlcul i les injecta en plantilles de Google Docs de forma dinàmica.
 
-
-
-### ✨ Característiques Principals
+### ✨ Característiques principals
 * **Interfície Professional**: Menús personalitzats i finestres modals construïdes amb HTML5 i CSS3 (Google Sans).
 * **Sistema de Plantilles Intel·ligent**: Detecció automàtica de plantilles en la mateixa carpeta del fitxer, garantint la portabilitat.
 * **Injecció Multisecció**: Substitució de variables `{{tag}}` en el cos, capçaleres, peus de pàgina i fins i tot en el títol del fitxer.

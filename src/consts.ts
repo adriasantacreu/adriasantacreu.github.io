@@ -3,7 +3,7 @@ import type { Site, Page, Links, Socials } from "@types"
 // Global
 export const SITE: Site = {
   TITLE: "Adrià Santacreu",
-  DESCRIPTION: "Graduat en Física (UB). Docent i Data Scientist. Especialista en automatització amb n8n, AppScript i IA aplicada a l'educació i la productivitat.",
+  DESCRIPTION: "Graduat en Física (UB). Docent i Data Scientist. Especialista en automatització amb n8n, Apps Script i IA aplicada a l'educació i la productivitat.",
   AUTHOR: "Adrià Santacreu",
 }
 

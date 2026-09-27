@@ -1,6 +1,6 @@
 ---
 title: "Google Classroom MCP"
-summary: "MCP (Model Context Protocol) server with 43 tools to integrate Google Classroom directly into AI agents like Claude, eliminating manual management of courses, assignments, and students."
+summary: "MCP (Model Context Protocol) server with 43 tools to integrate Google Classroom directly into AI agents, eliminating manual management of courses, assignments, and students."
 date: "Mar 20 2026"
 draft: false
 lang: en
@@ -28,7 +28,7 @@ Managing Google Classroom through the web interface is slow and repetitive: crea
 
 <Mermaid chart={`
 flowchart TD
-    A[👤 Teacher] -->|instruction in English| B[🤖 Claude LLM]
+    A[👤 Teacher] -->|natural language instruction| B[🤖 LLM Model]
     B -->|selects the appropriate tools| C[Google Classroom MCP Server]
     C -->|classroom_list_courses| D[(Google Classroom API)]
     C -->|classroom_create_assignment| D
@@ -36,7 +36,7 @@ flowchart TD
     D -->|✅ published| E[📚 Updated course]
 `} />
 
-### ✨ 43 Implemented Tools
+### ✨ 43 implemented tools
 
 The server covers the full range of Classroom operations:
 
@@ -49,9 +49,9 @@ The server covers the full range of Classroom operations:
 * **Announcements**: post and manage course communications.
 * **Guardians**: invite and manage students' legal guardians.
 
-### 🤖 Integration with Personal Assistant
+### 🤖 Integration with personal assistant
 
-This MCP is the central piece of a personal teaching assistant built around Claude Code. Combined with **Google Workspace MCP** (Gmail, Drive, Sheets, Docs, Calendar), it enables the automation of complete workflows:
+This MCP is the central piece of a personal teaching assistant built with AI agents. Combined with **Google Workspace MCP** (Gmail, Drive, Sheets, Docs, Calendar), it enables the automation of complete workflows:
 
 <Mermaid chart={`
 flowchart LR
