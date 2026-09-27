@@ -22,6 +22,9 @@ jobs:
           node-version: 20
           package-manager: npm
 
+      - name: Check internal links
+        run: node scripts/check-links.mjs dist
+
   deploy:
     needs: build
     runs-on: ubuntu-latest

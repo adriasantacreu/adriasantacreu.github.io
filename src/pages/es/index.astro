@@ -4,6 +4,7 @@ import PageLayout from "@layouts/PageLayout.astro";
 import ArrowCard from "@components/ArrowCard";
 import StackCard from "@components/StackCard.astro";
 import { SITE, SOCIALS } from "@consts";
+import { entryHref } from "@lib/utils";
 import TwinklingStars from "@components/TwinklingStars.astro";
 import MeteorShower from "@components/MeteorShower.astro";
 
@@ -155,7 +156,7 @@ const stack = [
           {
             projects.map((project) => (
               <li>
-                <ArrowCard entry={project} href={`/es/projects/${project.slug.replace(/\/index\.[a-z.]+$/, '')}`} />
+                <ArrowCard entry={project} href={entryHref("projects", project.slug, "es")} />
               </li>
             ))
           }

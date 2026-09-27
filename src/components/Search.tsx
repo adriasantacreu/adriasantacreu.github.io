@@ -3,16 +3,11 @@ import { createEffect, createSignal } from "solid-js"
 import Fuse from "fuse.js"
 import ArrowCard from "@components/ArrowCard"
 import SearchBar from "@components/SearchBar"
+import { entryHref } from "@lib/utils"
 
 type Props = {
   data: CollectionEntry<"blog">[]
   locale?: string
-}
-
-function entryHref(entry: CollectionEntry<"blog">, locale: string) {
-  const cleanSlug = entry.slug.replace(/\/index\.[a-z.]+$/, "")
-  const prefix = locale === "ca" ? "" : `/${locale}`
-  return `${prefix}/${entry.collection}/${cleanSlug}`
 }
 
 export default function Search({ data, locale = "ca" }: Props) {
@@ -51,7 +46,7 @@ export default function Search({ data, locale = "ca" }: Props) {
           <ul class="flex flex-col gap-3">
             {results().map(result => (
               <li>
-                <ArrowCard entry={result} pill={true} href={entryHref(result, locale)} />
+                <ArrowCard entry={result} pill={true} href={entryHref(result.collection, result.slug, locale)} />
               </li>
             ))}
           </ul>

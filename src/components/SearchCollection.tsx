@@ -2,7 +2,7 @@ import type { CollectionEntry } from "astro:content"
 import { createEffect, createSignal, For, onMount } from "solid-js"
 import Fuse from "fuse.js"
 import ArrowCard from "@components/ArrowCard"
-import { cn } from "@lib/utils"
+import { cn, entryHref } from "@lib/utils"
 import SearchBar from "@components/SearchBar"
 
 type Props = {
@@ -10,12 +10,6 @@ type Props = {
   tags: string[]
   data: CollectionEntry<"blog">[] | CollectionEntry<'projects'>[]
   locale?: string
-}
-
-function entryHref(entry: CollectionEntry<"blog"> | CollectionEntry<"projects">, locale: string) {
-  const cleanSlug = entry.slug.replace(/\/index\.[a-z.]+$/, "")
-  const prefix = locale === "ca" ? "" : `/${locale}`
-  return `${prefix}/${entry.collection}/${cleanSlug}`
 }
 
 export default function SearchCollection({ entry_name, data, tags, locale = "ca" }: Props) {
@@ -161,7 +155,7 @@ export default function SearchCollection({ entry_name, data, tags, locale = "ca"
           <ul class="flex flex-col gap-3">
             {collection().map((entry) => (
               <li>
-                <ArrowCard entry={entry} href={entryHref(entry, locale)} />
+                <ArrowCard entry={entry} href={entryHref(entry.collection, entry.slug, locale)} />
               </li>
             ))}
           </ul>

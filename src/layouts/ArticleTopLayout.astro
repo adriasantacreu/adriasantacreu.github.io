@@ -10,7 +10,8 @@ type Props = {
 const { entry, locale = "" } = Astro.props
 const { collection, data, body } = entry
 const { title, summary, date } = data
-const backUrl = locale ? `/${locale}/${collection}` : `/${collection}`
+// El català va sense prefix: amb "ca" es construiria /ca/projects, que no existeix.
+const backUrl = !locale || locale === "ca" ? `/${collection}` : `/${locale}/${collection}`
 
 const demoUrl = collection === "projects" ? data.demoUrl : null
 const repoUrl = collection === "projects" ? data.repoUrl : null

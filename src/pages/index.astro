@@ -4,11 +4,13 @@ import PageLayout from "@layouts/PageLayout.astro";
 import ArrowCard from "@components/ArrowCard";
 import StackCard from "@components/StackCard.astro";
 import { SITE, SOCIALS } from "@consts";
+import { entryHref } from "@lib/utils";
 import TwinklingStars from "@components/TwinklingStars.astro";
 import MeteorShower from "@components/MeteorShower.astro";
 
-const projects = (await getCollection("projects"))
-  .filter((project) => !project.data.draft)
+// Sense filtrar per idioma, la home mostrava cada projecte tres vegades (CA, EN i ES)
+// i les targetes EN/ES queien en rutes que no existeixen.
+const projects = (await getCollection("projects", ({ data }) => !data.draft && (!data.lang || data.lang === "ca")))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
@@ -162,7 +164,7 @@ const stack = [
           {
             projects.map((project) => (
               <li>
-                <ArrowCard entry={project} />
+                <ArrowCard entry={project} href={entryHref("projects", project.slug, "ca")} />
               </li>
             ))
           }

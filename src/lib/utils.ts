@@ -13,6 +13,20 @@ export function formatDate(date: Date) {
   }).format(date)
 }
 
+// Les traduccions segueixen la convenció index.mdx (CA), index.en.mdx (EN), index.es.mdx (ES).
+// Astro només elimina un segment /index final exacte, de manera que els slugs EN/ES queden
+// "gencat-cb-forms/indexen" i "gencat-cb-forms/indexes". Sense treure aquest sufix les rutes
+// es generen com /en/projects/gencat-cb-forms/indexen i totes les pàgines EN/ES donen 404.
+export function cleanSlug(slug: string) {
+  return slug.replace(/\/index.*$/, "")
+}
+
+// Enllaç canònic d'una entrada amb el prefix d'idioma correcte (el català va sense prefix).
+export function entryHref(collection: string, slug: string, locale = "") {
+  const prefix = !locale || locale === "ca" ? "" : `/${locale}`
+  return `${prefix}/${collection}/${cleanSlug(slug)}`
+}
+
 export function readingTime(html: string) {
   const textOnly = html.replace(/<[^>]+>/g, "")
   const wordCount = textOnly.split(/\s+/).length

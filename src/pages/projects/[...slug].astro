@@ -5,12 +5,13 @@ import TopLayout from "@layouts/TopLayout.astro"
 import BottomLayout from "@layouts/BottomLayout.astro"
 import ArticleTopLayout from "@layouts/ArticleTopLayout.astro"
 import ArticleBottomLayout from "@layouts/ArticleBottomLayout.astro"
+import { cleanSlug } from "@lib/utils"
 
 // Create the static projects pages
 export async function getStaticPaths() {
 	const projects = await getCollection("projects", ({ data }) => !data.lang || data.lang === "ca")
 	return projects.map((project) => ({
-		params: { slug: project.slug },
+		params: { slug: cleanSlug(project.slug) },
 		props: project,
 	}))
 }
@@ -24,12 +25,12 @@ const { title, summary } = project.data
 <PageLayout title={title} description={summary}>
   <TopLayout>
     <div class="animate">
-      <ArticleTopLayout entry={project} />
+      <ArticleTopLayout entry={project} locale="ca" />
     </div>
   </TopLayout>
   <BottomLayout>
     <div class="animate">
-      <ArticleBottomLayout entry={project} />
+      <ArticleBottomLayout entry={project} locale="ca" />
     </div>
   </BottomLayout>
 </PageLayout>

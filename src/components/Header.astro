@@ -36,11 +36,18 @@ const navLinks = navLinksMap[locale] ?? navLinksMap["ca"]!
 
 const searchHref = locale === "ca" ? "/search" : `/${locale}/search`
 
-const langLinks = {
-  ca: canonicalPath,
-  en: `/en${canonicalPath === "/" ? "" : canonicalPath}`,
-  es: `/es${canonicalPath === "/" ? "" : canonicalPath}`,
-}
+// /eina i /legal només existeixen en català. El selector oferia igualment EN i ES i
+// generava enllaços morts, així que en aquestes pàgines no es mostra cap traduccció.
+const caOnlySections = new Set(["eina", "legal"])
+const isTranslated = !caOnlySections.has(section)
+
+const langLinks = isTranslated
+  ? {
+      ca: canonicalPath,
+      en: `/en${canonicalPath === "/" ? "" : canonicalPath}`,
+      es: `/es${canonicalPath === "/" ? "" : canonicalPath}`,
+    }
+  : null
 ---
 
 <header id="header" class="fixed top-0 w-full h-16 z-50 bg-white/75 dark:bg-black/75 backdrop-blur-lg border-b border-black/5 dark:border-white/10 transition-colors duration-300">
@@ -70,11 +77,13 @@ const langLinks = {
     </div>
 
     <div class="buttons absolute right-0 top-1/2 -translate-y-1/2 flex gap-1">
+      {langLinks && (
       <div class="hidden md:flex items-center gap-1 mr-1">
         <a href={langLinks.ca} class={cn("h-7 px-2 rounded text-xs font-semibold transition-colors duration-300 ease-in-out flex items-center justify-center", locale === "ca" ? "bg-black dark:bg-white text-white dark:text-black" : "hover:bg-black/5 dark:hover:bg-white/20 text-current")}>CA</a>
         <a href={langLinks.en} class={cn("h-7 px-2 rounded text-xs font-semibold transition-colors duration-300 ease-in-out flex items-center justify-center", locale === "en" ? "bg-black dark:bg-white text-white dark:text-black" : "hover:bg-black/5 dark:hover:bg-white/20 text-current")}>EN</a>
         <a href={langLinks.es} class={cn("h-7 px-2 rounded text-xs font-semibold transition-colors duration-300 ease-in-out flex items-center justify-center", locale === "es" ? "bg-black dark:bg-white text-white dark:text-black" : "hover:bg-black/5 dark:hover:bg-white/20 text-current")}>ES</a>
       </div>
+      )}
       <a href={searchHref} aria-label={`Search blog posts and projects on ${SITE.TITLE}`} class={cn("hidden md:flex", "size-9 rounded-full p-2 items-center justify-center", "bg-transparent hover:bg-black/5 dark:hover:bg-white/20", "stroke-current hover:stroke-black hover:dark:stroke-white", "border border-black/10 dark:border-white/25", "transition-colors duration-300 ease-in-out", section === "search" ? "pointer-events-none bg-black dark:bg-white text-white dark:text-black" : "")}>
         <svg class="size-full">
           <use href="/ui.svg#search"></use>
