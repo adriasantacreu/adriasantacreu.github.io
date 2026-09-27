@@ -7,7 +7,7 @@ import BottomLayout from "@layouts/BottomLayout.astro"
 const title = "Experience"
 const description = "Academic background, teaching experience and technological solutions implemented."
 
-const collection = await getCollection("work")
+const collection = await getCollection("work", ({ data }) => data.lang === "en")
 
 collection.sort((a, b) => new Date(b.data.dateStart).getTime() - new Date(a.data.dateStart).getTime())
 

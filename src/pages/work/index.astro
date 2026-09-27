@@ -5,7 +5,7 @@ import TopLayout from "@layouts/TopLayout.astro"
 import BottomLayout from "@layouts/BottomLayout.astro"
 import { WORK } from "@consts"
 
-const collection = await getCollection("work")
+const collection = await getCollection("work", ({ data }) => !data.lang || data.lang === "ca")
 
 collection.sort((a, b) => new Date(b.data.dateStart).getTime() - new Date(a.data.dateStart).getTime())
 
@@ -17,9 +17,12 @@ const work = await Promise.all(
 )
 
 function formatWorkDate(input: Date | string) {
-  if (typeof input === "string") return input
+  if (typeof input === "string") {
+    if (input.toLowerCase() === "present") return "Actualitat"
+    return input
+  }
 
-  const month = input.toLocaleDateString("en-US", {
+  const month = input.toLocaleDateString("ca-ES", {
     month: "short",
   })
 
