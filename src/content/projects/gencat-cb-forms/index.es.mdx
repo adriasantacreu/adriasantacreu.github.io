@@ -1,0 +1,100 @@
+---
+title: "Gencat CB to Google Forms"
+summary: "Pipeline autónomo de ingeniería documental que transforma exámenes oficiales de Competencias Básicas y Diagnósticas de la Generalitat en 18 formularios autocorregibles de Google Forms mediante visión por computador, PyMuPDF y Tesseract OCR."
+date: "Sep 27 2026"
+draft: false
+tags:
+  - Python
+  - Google Forms API
+  - OpenCV
+  - OCR
+  - PyMuPDF
+  - Automatización
+  - Docencia
+lang: es
+demoUrl: https://drive.google.com/drive/folders/1J-LcDfdiySsMW4sWm-beSx4uvzT3odDm
+repoUrl: https://github.com/adriasantacreu/gencat-cb-forms
+---
+
+import Mermaid from '@components/Mermaid.astro'
+
+### 💡 Motivación y el Reto Docente
+
+Cada curso, el Departament d'Educació de la Generalitat de Catalunya publica las pruebas oficiales de Evaluación Diagnóstica (2º de ESO) y Competencias Básicas (4º de ESO) en formato PDF. Son cuadernos de entre 16 y 20 páginas con diagramas científicos, gráficas cartesianas, tablas de datos y baterías de preguntas de opción múltiple y desarrollo.
+
+A la hora de trasladar estas pruebas a **Google Forms** para que el alumnado pueda responderlas y obtener autoevaluación inmediata:
+* El procedimiento tradicional requiere recortar decenas de capturas manualmente, subirlas una a una e introducir las soluciones a mano: **fácilmente más de una hora de trabajo tedioso por examen**.
+* Los recortes rectangulares manuales generan **márgenes blancos gigantes** que hacen que el texto se vea minúsculo en pantallas móviles o tabletas.
+* Con frecuencia se produce **contaminación cruzada**: el enunciado de la pregunta siguiente queda atrapado en la parte inferior de la imagen de contexto.
+
+Este proyecto nace para construir un **pipeline de ingeniería totalmente automatizado, auditado y libre de intervención manual**.
+
+---
+
+### 🛠️ Arquitectura del Pipeline
+
+El proceso se estructura en cuatro capas independientes y desacopladas:
+
+<Mermaid chart={`
+flowchart TD
+    A[📄 PDF Oficial de Gencat] --> B[1. Descarga Automática]
+    B --> C[2. Segmentador Vectorial PyMuPDF]
+    C -->|Criterio x0 <= 88pt| D[OpenCV autocrop_tight pad=6]
+    D --> E[3. Auditoría Estricta]
+    E -->|Márgenes vacíos < 15px| F{Control Calidad}
+    E -->|OCR Tesseract en catalán| F
+    F -->|❌ Error| C
+    F -->|✅ 100% PASS| G[4. Constructor Google Forms API]
+    G --> H[☁️ Subida de assets a Drive]
+    G --> I[📋 batchUpdate: Modo Quiz activo]
+    I --> J[🎉 Formulario Autocorregible listo]
+`} />
+
+---
+
+### 🔬 Retos Técnicos de Ingeniería Resueltos
+
+#### 1. Invariante Geométrico de Gencat (`x0 <= 88.0 pt`)
+Analizando la maquetación tipográfica de los PDFs del Departament, se identificó que el número de ítem principal comienza invariablemente en una coordenada `x0 <= 88.0 pt` respecto al margen izquierdo. Cualquier otro número de tabla u opción de test (`a`, `b`, `c`, `d`) comienza en `x >= 95.0 pt`. Esto permite aislar los enunciados con **cero falsos positivos**.
+
+#### 2. Autocrop Estricto con OpenCV (`autocrop_tight`)
+A partir del canal monocromático (`gray < 248`), se calcula la caja envolvente matemática mínima de la tinta real y se añaden exactamente 6 px de margen estético perimetral, garantizando una visión nítida tanto en móviles como en pantallas grandes:
+
+```python
+def autocrop_tight(img, pad=6, white_thresh=248):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if len(img.shape) == 3 else img
+    non_white = np.where(gray < white_thresh)
+    if len(non_white[0]) == 0:
+        return img
+    y0, y1 = int(np.min(non_white[0])), int(np.max(non_white[0]))
+    x0, x1 = int(np.min(non_white[1])), int(np.max(non_white[1]))
+    h, w = gray.shape
+    return img[max(0, y0-pad):min(h, y1+pad+1), max(0, x0-pad):min(w, x1+pad+1)]
+```
+
+#### 3. Auditoría de Contaminación con OCR Tesseract en Catalán
+Para asegurar que ningún contexto de actividad contenga texto de la pregunta siguiente, cada imagen de contexto pasa por un filtro de OCR Tesseract (`lang="cat"`). Si detecta patrones como `r"^\s*([0-9]{1,2})\.\s+([A-ZÀ-Ú][a-zà-ú]+)"`, la prueba es rechazada automáticamente.
+
+#### 4. Ponderación Natural en Google Forms API
+La API de Google Forms solo admite valores enteros de puntuación (`pointValue: integer`) y rechaza decimales como `0.25` (`INVALID_ARGUMENT`). Para tablas de verdadero/falso o sí/no, cada fila se modela como un subítem independiente de 1 punto, respetando el peso curricular sin pérdida de precisión.
+
+---
+
+### 📊 Banco de 18 Formularios Oficiales en Producción
+
+El pipeline ha permitido generar y publicar el banco completo de **18 formularios oficiales (2021–2026)** alojados de forma permanente y pública:
+
+* **4º de ESO (Competencias Básicas):**
+  * **Matemáticas:** 2026, 2025, 2024, 2023, 2022, 2021.
+  * **Ciencia y Tecnología:** 2026, 2025, 2024, 2023, 2022, 2021.
+* **2º de ESO (Evaluaciones Diagnósticas):**
+  * **Matemáticas:** 2026, 2025, 2024.
+  * **Ciencia y Tecnología:** 2026, 2025, 2024.
+
+El tiempo necesario para transformar cualquier cuaderno entero ha pasado de **más de una hora a menos de 30 segundos**.
+
+---
+
+### 💻 Código Abierto
+El conjunto de herramientas está publicado en GitHub bajo licencia MIT para uso libre de cualquier docente o centro educativo:
+🔗 **[github.com/adriasantacreu/gencat-cb-forms](https://github.com/adriasantacreu/gencat-cb-forms)**
