@@ -6,16 +6,15 @@ import AppsScriptEmbed from '../components/AppsScriptEmbed.astro';
 const MI_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxTx1SKWKyRHNbI0HVTxui3TRV4qcJi6c9mnF59GFTWomBQlWCZWu7CFSNqOKrqBwYo3A/exec";
 ---
 
-<Layout title="La meva Eina">
-  <main>
-    <h1>La meva aplicació Apps Script</h1>
-    <p>Aquesta eina s'executa directament des del núvol de Google:</p>
+<Layout title="La meva eina">
+  <div class="pt-24 pb-12 max-w-screen-md mx-auto px-5">
+    <h1 class="text-3xl font-bold text-black dark:text-white mb-2">La meva aplicació Apps Script</h1>
+    <p class="text-black/75 dark:text-white/75 mb-6">Aquesta eina s'executa directament des del núvol de Google:</p>
 
     <AppsScriptEmbed 
       url={MI_SCRIPT_URL} 
       height="800px" 
       title="Gestió de dades"
     />
-
-  </main>
+  </div>
 </Layout>
