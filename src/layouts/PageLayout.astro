@@ -5,12 +5,32 @@ import Header from "@components/Header.astro"
 import Footer from "@components/Footer.astro"
 import Drawer from "@components/Drawer.astro"
 import StarfieldBg from "@components/StarfieldBg.astro"
-const { title, description, hideStarfield = false } = Astro.props
 import { SITE } from "@consts"
+
+interface Props {
+  title: string
+  description?: string
+  hideStarfield?: boolean
+  locale?: "ca" | "en" | "es"
+}
+
+const { title, description = SITE.DESCRIPTION, hideStarfield = false, locale } = Astro.props
+
+const pathname = Astro.url.pathname
+let detectedLocale = locale
+if (!detectedLocale) {
+  if (pathname === "/en" || pathname.startsWith("/en/")) {
+    detectedLocale = "en"
+  } else if (pathname === "/es" || pathname.startsWith("/es/")) {
+    detectedLocale = "es"
+  } else {
+    detectedLocale = "ca"
+  }
+}
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={detectedLocale}>
   <head>
     <BaseHead title={`${title} | ${SITE.TITLE}`} description={description} />
   </head>

@@ -1,6 +1,47 @@
 ---
 import { SITE, SOCIALS } from "@consts"
 import Container from "@components/Container.astro"
+
+const pathname = Astro.url.pathname
+let locale = "ca"
+if (pathname === "/en" || pathname.startsWith("/en/")) {
+  locale = "en"
+} else if (pathname === "/es" || pathname.startsWith("/es/")) {
+  locale = "es"
+}
+
+const labelsMap: Record<string, {
+  backToTop: string
+  allSystemsNormal: string
+  terms: string
+  privacy: string
+  rights: string
+}> = {
+  ca: {
+    backToTop: "Tornar a dalt",
+    allSystemsNormal: "Tots els sistemes operatius",
+    terms: "Termes d'ús",
+    privacy: "Privacitat",
+    rights: "Tots els drets reservats",
+  },
+  en: {
+    backToTop: "Back to top",
+    allSystemsNormal: "All systems normal",
+    terms: "Terms",
+    privacy: "Privacy",
+    rights: "All rights reserved",
+  },
+  es: {
+    backToTop: "Volver arriba",
+    allSystemsNormal: "Todos los sistemas operativos",
+    terms: "Términos de uso",
+    privacy: "Privacidad",
+    rights: "Todos los derechos reservados",
+  },
+}
+
+const labels = labelsMap[locale] ?? labelsMap["ca"]!
+const currentYear = new Date().getFullYear()
 ---
 
 <footer class="relative bg-white dark:bg-black">
@@ -8,13 +49,13 @@ import Container from "@components/Container.astro"
     <section class="py-5">
       <Container size="md">
         <div class="flex items-center justify-center sm:justify-end">
-          <button id="back-to-top" aria-label="Back to top of page" class="group flex w-fit p-1.5 gap-1.5 text-sm items-center border rounded hover:bg-black/5 hover:dark:bg-white/10 border-black/15 dark:border-white/20 transition-colors duration-300 ease-in-out">
+          <button id="back-to-top" aria-label={labels.backToTop} class="group flex w-fit p-1.5 gap-1.5 text-sm items-center border rounded hover:bg-black/5 hover:dark:bg-white/10 border-black/15 dark:border-white/20 transition-colors duration-300 ease-in-out">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="stroke-current group-hover:stroke-black group-hover:dark:stroke-white rotate-90">
               <line x1="19" y1="12" x2="5" y2="12" class="scale-x-0 group-hover:scale-x-100 translate-x-3 group-hover:translate-x-0 transition-all duration-300 ease-in-out" />
               <polyline points="12 19 5 12 12 5" class="translate-x-1 group-hover:translate-x-0 transition-all duration-300 ease-in-out" />
             </svg>
             <div class="w-full group-hover:text-black group-hover:dark:text-white transition-colors duration-300 ease-in-out">
-              Back to top
+              {labels.backToTop}
             </div>
           </button>
         </div>
@@ -37,7 +78,7 @@ import Container from "@components/Container.astro"
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-300"></span>
               <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
             </span>
-            All systems normal
+            {labels.allSystemsNormal}
           </div>
         </div>
       </Container>
@@ -49,14 +90,14 @@ import Container from "@components/Container.astro"
           <div class="order-2 sm:order-1 flex flex-col items-center justify-center sm:items-start">
             <div class="legal">
               <a href="/legal/terms" class="text-current hover:text-black dark:hover:text-white transition-colors duration-300 ease-in-out">
-                Terms
+                {labels.terms}
               </a> |
               <a href="/legal/privacy" class="text-current hover:text-black dark:hover:text-white transition-colors duration-300 ease-in-out">
-                Privacy
+                {labels.privacy}
               </a>
             </div>
             <div class="text-sm mt-2">
-              &copy; 2024 | All rights reserved
+              &copy; {currentYear} | {labels.rights}
             </div>
           </div>
   
