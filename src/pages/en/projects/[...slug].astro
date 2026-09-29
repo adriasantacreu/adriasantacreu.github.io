@@ -8,7 +8,7 @@ import ArticleBottomLayout from "@layouts/ArticleBottomLayout.astro"
 import { cleanSlug } from "@lib/utils"
 
 export async function getStaticPaths() {
-	const projects = await getCollection("projects", ({ data }) => data.lang === "en")
+	const projects = await getCollection("projects", ({ data }) => !data.draft && data.lang === "en")
 	return projects.map((project) => {
 		return {
 			params: { slug: cleanSlug(project.slug) },
