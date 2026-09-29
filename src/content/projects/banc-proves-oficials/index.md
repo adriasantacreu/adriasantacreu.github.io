@@ -1,13 +1,13 @@
 ---
-title: "Banc de proves oficials"
-summary: "Cercador web de preguntes oficials de PAU i Competències Bàsiques de Catalunya: 790 exercicis amb captura a 200 DPI, cerca instantània al navegador, solucions oficials, còpia al porta-retalls i fitxes A4 imprimibles. 100% estàtic a GitHub Pages."
-date: "Sep 28 2026"
+title: "Mostrari de proves oficials"
+summary: "Cercador web de preguntes oficials de PAU (Matemàtiques II i CCSS) i de Competències Bàsiques de Catalunya: 1.005 exercicis PAU i 77 activitats CCBB amb 627 ítems, cada un amb la captura original, cerca instantània al navegador i fitxes A4 imprimibles. 100% estàtic."
+date: "Sep 29 2026"
 draft: true
 tags:
   - TypeScript
   - Vite
-  - Tailwind CSS
   - MiniSearch
+  - SQLite
   - PyMuPDF
   - OpenCV
   - Docència
@@ -17,32 +17,36 @@ repoUrl: https://github.com/adriasantacreu/banc-proves-oficials
 
 ### Motivació
 
-Quan prepares una fitxa d'exercicis, la pregunta que val la pena treballar gairebé sempre ja existeix: està en una PAU d'un any concret o en una prova de Competències Bàsiques. El problema no és la manca de material, sinó **la fricció per trobar-lo i extreure'l**: PDFs de desenes de pàgines, captures de pantalla a mà, solucions en fitxers separats i marges blancs per tot arreu.
+Quan prepares una fitxa d'exercicis, la pregunta que val la pena treballar gairebé sempre ja existeix: és en una PAU d'un any concret o en una prova de Competències Bàsiques. El problema no és la manca de material, sinó **la fricció per trobar-lo i extreure'l**: PDF de desenes de pàgines, captures fetes a mà i solucions en fitxers a part.
 
-Aquest projecte converteix anys de proves oficials en una eina de consulta instantània: escrius «matriu invertible» i tens la captura neta de la pregunta, la referència exacta (any, convocatòria, sèrie, número i punts), la solució oficial i la pauta de correcció a un clic.
+Aquest projecte converteix les proves oficials en una eina de consulta: escrius «matriu» i tens la captura neta de cada pregunta, la referència exacta (any, convocatòria, sèrie, número i punts) i la solució oficial a un clic.
 
-### Solució tècnica
+### Què té dins
 
-**Pipeline d'enginyeria documental** (Python + PyMuPDF + OpenCV):
+* **PAU**: 1.005 exercicis, 528 de Matemàtiques II (1997–2025) i 477 de Matemàtiques aplicades a les CCSS (2000–2025), amb l'enunciat i la solució oficial capturats per separat.
+* **Competències Bàsiques**: 77 activitats de les proves de 4t i 2n d'ESO (2021–2026), amb 627 ítems. La unitat és l'**activitat**: el context (text, figures) es veu sempre, i cada ítem té la seva pròpia captura i la clau oficial.
+* **2.526 imatges** WebP sense pèrdua, ~100 MB en total.
 
-* **PAU**: 163 exercicis de Matemàtiques II (1997–2025) procedents del compendi *Pautec*, amb enunciat, solució i barem indexats a SQLite amb cerca de text complet (FTS5).
-* **Competències Bàsiques**: 627 ítems de les proves oficials de 4t i 2n d'ESO (2021–2026), retallats automàticament amb detecció geomètrica dels PDF oficials. Quan el mapa de caràcters de la font ve trencat (cas de les proves de 2025), un **fallback amb Tesseract OCR** localitza els números d'ítem sobre el render de la pàgina.
-* Cada retall passa per `autocrop_tight` (OpenCV): fons blanc net, sense marges sobrants, **200 DPI de nitidesa real**, i es publica en **WebP sense pèrdua** (~15 KB per captura; 46 MB tot el banc).
+### Com s'ha fet
 
-**Front-end 100% estàtic** (TypeScript + Vite + Tailwind):
+**Dues bases de dades, una capa prima per damunt.** Cada col·lecció té la seva base (SQLite amb FTS5) i un `check` que s'atura si alguna cosa no quadra: el recompte d'exercicis ha de ser igual al de l'índex oficial, cada exercici ha de tenir captura d'enunciat, cap enunciat pot dur text de solució, cap context pot contenir un ítem i els marges de les captures són nets. Les excepcions que s'accepten estan escrites a un fitxer, no amagades al codi.
 
-* L'índex pre-generat (`proves.json`, 1 MB) s'indexa en memòria amb **MiniSearch** al carregar la pàgina: cerca instantània (< 10 ms) amb prefixos, tolerància d'errors i **normalització catalana d'accents** («calcul» troba «càlcul»).
-* Zero backend: tot corre al navegador i s'allotja a GitHub Pages amb desplegament automàtic (GitHub Actions).
+**El mostrari només llegeix les bases.** Un script d'export valida els recomptes, converteix a WebP i genera un índex lleuger (~580 KB) i un corpus de text a part (~1,9 MB) que es carrega després del primer pintat. Això manté el primer pintat ràpid.
 
-### Característiques principals
+**Front-end estàtic** (TypeScript + Vite, sense frameworks):
 
-* **Cerca i filtres en temps real** per etapa, matèria, convocatòria i any, amb recompte de resultats en viu i suggeriments quan no hi ha coincidències.
-* **Solucions i criteris oficials** desplegables a cada targeta: captura de la resolució o resposta correcta, amb la indicació clara quan una prova antiga no té solució digitalitzada.
-* **Còpia al porta-retalls amb un clic**: la captura es converteix a PNG al navegador (`Clipboard API`) i s'enganxa directament a Word, Google Docs, Canva o LaTeX. Si el navegador bloqueja el permís, ofereix la descàrrega.
-* **Carret de preguntes i fitxa A4**: selecciones exercicis de qualsevol any i convocatòria, els reordenes, i el mode d'impressió (`@media print`) maqueta una fitxa neta amb capçalera editable (títol, curs, data i nom) i **cap enunciat partit entre pàgines** (`break-inside: avoid`).
+* Cerca amb **MiniSearch** al navegador: prefixos, tolerància a errades i sense accents («calcul» troba «càlcul»).
+* Filtres per col·lecció, bloc, convocatòria i rang d'anys, amb recompte en viu. L'estat viu al hash de la URL, de manera que una cerca es pot enllaçar.
+* **Còpia al porta-retalls**: la captura es converteix a PNG al navegador i s'enganxa a Word, Docs o LaTeX.
+* **Carret i fitxa A4** imprimible, amb o sense solucions i amb cap enunciat partit entre pàgines.
 
-### Impacte
+### Què he après (i què va fallar)
 
-* **790 preguntes** oficials consultables en menys d'un segon, sense registrar-se ni descarregar cap PDF.
-* El que abans eren 10–15 minuts de captures manuals per pregunta queda reduït a **un clic** (còpia directa) o a **dos clics** (fitxa completa imprimible).
-* Cost d'infraestructura: **zero**. Tot el servei és estàtic i gratuït, i el codi és públic per a la comunitat docent.
+La primera versió va sortir amb 790 exercicis i semblava bé, però no ho estava: el mostrari retallava les captures pel seu compte, els sub-ítems reutilitzaven la captura del pare i hi havia textos que només eren el resum de l'activitat. Cap tasca no s'havia comprovat mirant el resultat. Vaig refer-ho des de les fonts: cada base té les seves comprovacions i, abans de donar una fase per acabada, es genera un **full de miniatures** perquè una persona el repassi. Ha estat la part que més ha valgut la pena.
+
+### Estat i límits
+
+* Lighthouse: escriptori 98 / 100 / 100 / 100 i mòbil 87 / 100 / 100 / 100 (rendiment, accessibilitat, bones pràctiques i SEO), sense desplaçaments de disseny.
+* Els blocs i temes són una classificació proposada que encara he de revisar a mà.
+* Dos contexts de la prova CTE de 2n d'ESO (2024) duen un ítem a dins: són una excepció documentada.
+* Les captures provenen de documents oficials de la Generalitat de Catalunya i es publiquen amb finalitat docent.
