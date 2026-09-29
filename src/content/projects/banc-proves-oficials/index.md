@@ -2,7 +2,7 @@
 title: "Mostrari de proves oficials"
 summary: "Cercador web de preguntes oficials de PAU (Matemàtiques II i CCSS) i de Competències Bàsiques de Catalunya: 1.005 exercicis PAU i 77 activitats CCBB amb 627 ítems, cada un amb la captura original, cerca instantània al navegador i fitxes A4 imprimibles. 100% estàtic."
 date: "Sep 29 2026"
-draft: true
+draft: false
 tags:
   - TypeScript
   - Vite
