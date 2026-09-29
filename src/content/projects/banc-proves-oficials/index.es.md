@@ -2,7 +2,7 @@
 title: "Banco de pruebas oficiales"
 summary: "Buscador web de preguntas oficiales de PAU y Competencias Básicas de Cataluña: 790 ejercicios con captura a 200 DPI, búsqueda instantánea en el navegador, soluciones oficiales, copia al portapapeles con un clic y fichas A4 imprimibles. 100% estático en GitHub Pages."
 date: "Sep 28 2026"
-draft: false
+draft: true
 tags:
   - TypeScript
   - Vite

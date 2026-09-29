@@ -2,7 +2,7 @@
 title: "Banc de proves oficials"
 summary: "Cercador web de preguntes oficials de PAU i Competències Bàsiques de Catalunya: 790 exercicis amb captura a 200 DPI, cerca instantània al navegador, solucions oficials, còpia al porta-retalls i fitxes A4 imprimibles. 100% estàtic a GitHub Pages."
 date: "Sep 28 2026"
-draft: false
+draft: true
 tags:
   - TypeScript
   - Vite

@@ -2,7 +2,7 @@
 title: "Official Exam Question Bank"
 summary: "Web search engine for official Catalan exam questions (PAU and Basic Competencies): 790 exercises with 200 DPI captures, instant in-browser search, official solutions, one-click clipboard copy and printable A4 worksheets. 100% static on GitHub Pages."
 date: "Sep 28 2026"
-draft: false
+draft: true
 tags:
   - TypeScript
   - Vite
