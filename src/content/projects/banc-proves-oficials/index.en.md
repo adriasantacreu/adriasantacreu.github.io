@@ -27,6 +27,7 @@ This project turns the official exams into a lookup tool: type "matriu" (matrix)
 * **PAU**: 1,005 exercises, 528 from Mathematics II (1997–2025) and 477 from Applied Mathematics for Social Sciences (2000–2025), with the statement and the official solution captured separately.
 * **Basic Competences**: 77 activities from the 4th and 2nd year ESO tests (2021–2026), with 627 items. The unit is the **activity**: the context (text, figures) is always visible, and each item has its own capture and the official key.
 * **2,526 lossless WebP images**, ~100 MB in total.
+* **Forms**: the Basic Competences tests are also [self-grading Google Forms](https://drive.google.com/drive/folders/1J-LcDfdiySsMW4sWm-beSx4uvzT3odDm), in my Drive folder.
 
 ### How it was built
 

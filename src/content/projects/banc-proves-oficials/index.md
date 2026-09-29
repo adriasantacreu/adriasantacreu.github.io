@@ -26,6 +26,7 @@ Aquest projecte converteix les proves oficials en una eina de consulta: escrius 
 * **PAU**: 1.005 exercicis, 528 de Matemàtiques II (1997–2025) i 477 de Matemàtiques aplicades a les CCSS (2000–2025), amb l'enunciat i la solució oficial capturats per separat.
 * **Competències Bàsiques**: 77 activitats de les proves de 4t i 2n d'ESO (2021–2026), amb 627 ítems. La unitat és l'**activitat**: el context (text, figures) es veu sempre, i cada ítem té la seva pròpia captura i la clau oficial.
 * **2.526 imatges** WebP sense pèrdua, ~100 MB en total.
+* **Formularis**: les proves de Competències Bàsiques també són [formularis de Google autocorregibles](https://drive.google.com/drive/folders/1J-LcDfdiySsMW4sWm-beSx4uvzT3odDm), a la meva carpeta de Drive.
 
 ### Com s'ha fet
 

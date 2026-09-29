@@ -27,6 +27,7 @@ Este proyecto convierte las pruebas oficiales en una herramienta de consulta: es
 * **PAU**: 1.005 ejercicios, 528 de Matemáticas II (1997–2025) y 477 de Matemáticas aplicadas a las CCSS (2000–2025), con el enunciado y la solución oficial capturados por separado.
 * **Competencias Básicas**: 77 actividades de las pruebas de 4.º y 2.º de ESO (2021–2026), con 627 ítems. La unidad es la **actividad**: el contexto (texto, figuras) se ve siempre, y cada ítem tiene su propia captura y la clave oficial.
 * **2.526 imágenes** WebP sin pérdida, ~100 MB en total.
+* **Formularios**: las pruebas de Competencias Básicas también son [formularios de Google autocorregibles](https://drive.google.com/drive/folders/1J-LcDfdiySsMW4sWm-beSx4uvzT3odDm), en mi carpeta de Drive.
 
 ### Cómo se ha hecho
 
